@@ -11,7 +11,7 @@ struct game{
 	vector<vector<bool>> exs, blast;
 	string modes[3] = {"timer", "infinite", "normal"}, mode;
 	time_t tb, tbr;
-	bool checking = false, checkmanual = true;
+	bool checking = true, checkmanual = false;
 	vector<string> code;
 
 	int pts = 0, canon, ini, tl = 120, rows, X, Y, bl, blsc;
@@ -114,8 +114,12 @@ struct game{
 		if(!frombot)
 			silent = false;
 		if(checking){
-			file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+			file >> tb;
+			file >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
 			silent = true;
+			srand(tb);
+			jomle = 0;
+			// in chera dorost nemihkoone?
 		}
 		rows = 10;
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
@@ -148,7 +152,7 @@ struct game{
 			c_col(6);
 			cout << "Score: " << pts << "\n\n";
 			c_col(9);
-			cout << "Timer: " << time(nullptr) - tbr << "s " << (mode == "timer" ? "of 120s\n" : "\n");
+			cout << "Timer: " << time(nullptr) - tbr << "s " << (mode == "timer" ? "of 120s" : "")  << (checkmanual ? " tb:" + to_string(tb) : "") << '\n';
 			c_col(15);
 			cout << "------------------------\n\n  ";
 			for(int i = 0; i < M; ++i)
@@ -226,6 +230,25 @@ struct game{
 		getch();
 		cout << "-----" << '\n';
 		*/
+		/*
+		if(pts == 262 || code.size() < 20){
+			cout << "pts = 262" << "\n";
+			for(int i = 0; i < maxn; ++i){
+				cout << (char)('A' + i) << '|';
+				for(int j = 0; j < M; ++j){
+					c_col(a[i][j]);
+					cout << (char)('A' + j);
+				}
+				c_col(15);
+				cout << '|' << '\n';
+			}
+			cout << "----------------------------------------" << '\n';
+			c_col(15);
+			cout << " ba in: (" <<  (char)(X + 'A') << (char)(Y + 'A')  << ")  edame" << '\n';
+			getch();
+			cout << "-------\n";
+		}
+		*/
 		return;
 	}
 
@@ -274,6 +297,9 @@ struct game{
 			report += "|";
 			cout << report << ":: " << jomle << '\n';
 			silent = !silent;
+			cout << "yechi bezan ta bere" << '\n';
+			getch();
+			Sleep(10000);
 			sit();
 			prt_scr(canon);
 			silent = !silent;
@@ -357,9 +383,6 @@ struct game{
 		if(!check_good({x, y})){
 			if(bot == 1){
 				a = a1, exs = exs1, blast = blast1;
-				prt_scr(canon);
-				cout << "bebin ino  not-good" << '\n';
-				getch();
 				return 1000000020;
 			}
 		}
@@ -456,19 +479,20 @@ struct game{
 
 	void gameplay(){
 		gen();
-		int x, y, mvs = 0, mvs1 = 0;
+		char cmd;
+		int mvs = 0, mvs1 = 0;
 		ofstream ffff;
 		if(checkmanual)
 			ffff.open("inam shans ma1.txt");
 		while(true){
 			if(check_end())
 				break;
-			string s;
 			updlst();
 			if(lst.size() == 0){
 				cout << "Kurwa!\n";
 				exit(87);
 			}
+			int x, y;
 			////////////botbegin///////////////////
 			if(frombot){
 				inja = true;
@@ -497,8 +521,9 @@ struct game{
 				inja  = false;
 			}
 			/////////////bot-end///////////
-			if(!frombot){
+			else{
 				while(true){
+					string s;
 					if(!checking)
 						cin >> s;
 					else
@@ -522,17 +547,22 @@ struct game{
 					cout << "invlaid input, try again" << '\n';
 				}
 			}
-			string str = "";
-			str += (char)(x + 'A');
-			str += (char)(y + 'A');
+			string str = "00";
+			str[0] = (char)(x + 'A');
+			str[1] = (char)(y + 'A');
 			code.push_back(str);
 			X = x, Y = y;
 			a[x][y] = canon, blast[x][y] = false, exs[x][y] = true;
+			if(frombot && !silent  && cmd != 's'){
+				prt_scr(canon);
+				cout << "az canon ba hamin rang zadim tooye : " << (char)(x + 'A') << (char)(y + 'A') << '\n';
+				cmd = getch();
+			}
 			if(!check_good({x, y})){
 				++mvs1;
 				if(mode == "normal" && rows-- >= 0)
 					add_row();
-				else if(mode != "normal" && mode[0] != 'm' && rows-- >= 0)
+				else if(mode != "normal" && toupper(mode[0]) != 'M' && rows-- >= 0)
 					add_row();
 				prt_scr(rnd());
 				if(check_end())
@@ -587,9 +617,10 @@ struct game{
 			}
 			else{
 				head();
-				cout << "Do you want to use bot? (y/n)" << '\n';
-				if(!checking)
+				if(!checking){
+					cout << "Do you want to use bot? (y/n)" << '\n';
 					frombot = ('y' == getch());
+				}
 				else
 					frombot = false;
 				mode = (frombot ? "Miner-Bot" : "Miner-Manual");

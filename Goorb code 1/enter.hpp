@@ -10,15 +10,16 @@ string hs(string &s){
 	ll md[5] = {1000000021, 1000000009, 1000000007, 998244353, 2000000011};
 	ll sum = 0;
 	string res = "", st;
-	for(int k = 0; k < 5; ++k, res += st, sum = 0)
+	for(int k = 0; k < 5; ++k, sum = 0, res += st){
 		for(int i = 0; i < s.size(); ++i){
 			sum = (sum * bs[k]) % md[k];
 			sum += s[i];
 			sum %= md[k];
 			st = to_string((int)sum);
-			for(int j = 0; j < 11 - st.size(); ++j)
-				res.push_back('0');
 		}
+		for(int j = 0; j < 11 - st.size(); ++j)
+			res.push_back('0');
+	}
 	return res;
 }
 
