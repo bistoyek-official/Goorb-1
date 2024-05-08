@@ -114,13 +114,12 @@ struct game{
 		if(!frombot && !checking)
 			silent = false;
 		if(checking){
-			cout << "\n~enter file dir: ";
+			cout << "\n~ enter file dir: ";
 			string s;
 			getline(cin, s);
 			file.open(s);
 			file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
 			srand(tb);
-			jomle = 0;
 		}
 		rows = 10;
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
