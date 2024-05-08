@@ -2,16 +2,11 @@
 using namespace std;
 
 int main(){
-    ifstream f1("inam shans ma1.txt");
-    ifstream f2("inam shans ma2.txt");
-    ofstream f3("compare1.txt");
-    string l1, l2;
+    ifstream f1;
+    f1.open("./accounts/games/1715144540, 0020480431900892742979002886767820026212853201530227505.txt");
+    string l1;
     while(getline(f1, l1)){
-        getline(f2, l2);
-        if(l1 == l2)
-            f3 << l1 + " == " + l2 << '\n';
-        else
-            f3 << l1 + " != " + l2 << '\n';
+        cout << l1 << '\n';
     }
 	return 0;
 }
