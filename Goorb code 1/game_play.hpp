@@ -70,9 +70,10 @@ struct game{
 							if(blast[ii][jj])
 								blast[ii][jj] = false, exs[ii][jj] = true;
 					tmp1 = pts, pts = tmp;
-					if(tmp1 - tmp <= bl){
-						if(tmp1 - tmp > blsc && k == 20)
-							a[0][i] = 8;
+					if(tmp1 - tmp <= bl)
+						break;
+					if(tmp1 - tmp > blsc && k == 20){
+						a[0][i] = 8;
 						break;
 					}
 					upd_rnd();
