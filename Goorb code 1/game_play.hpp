@@ -106,7 +106,7 @@ struct game{
 		}
 		//==========begin=====================
 		N = 5, maxn = 31, M = 15, same = 720;
-		addr = 4, addr1 = 4;
+		addr = 2, addr1 = 2;
 		bl = 10, blsc = 14;
 		srand(tb);
 		jomle = 0;
@@ -268,13 +268,14 @@ struct game{
 				prt_scr(canon);
 				return false;
 			}
-			cout << "\n=====================YOU WIN!======================\n";
+			cout << "\n====================YOU WIN!===================|\n";
 			string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
 			while(report.size() < 47)
 				report += " ";
 			report += "|";
 			cout << report << ":: " << jomle << '\n';
 			silent = !silent;
+			//////////// ino tooyr noskhe haye gheire dasti dorost kon/////////////////////
 			cout << "yechi bezan ta bere" << '\n';
 			getch();
 			Sleep(10000);
@@ -283,6 +284,7 @@ struct game{
 			silent = !silent;
 			cout << (char)7;
 			cout << "press a key to continue" << '\n';
+			///////////////////////////////////////////////////////////////////////////////
 			getch();
 			update();
 			return true;
