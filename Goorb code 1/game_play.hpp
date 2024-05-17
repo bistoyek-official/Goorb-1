@@ -11,7 +11,7 @@ struct game{
 	vector<vector<bool>> exs, blast;
 	string modes[3] = {"timer", "infinite", "normal"}, mode;
 	time_t tb, tbr;
-	bool checking = false, checkmanual = false;
+	bool checking = true, checkmanual = false;
 	vector<string> code;
 
 	int pts = 0, canon, ini, tl = 120, rows, X, Y, bl, blsc;
@@ -118,6 +118,8 @@ struct game{
 			cout << "\n~ enter file dir: ";
 			string s;
 			getline(cin, s);
+			if(tries > 1)
+				file.close();
 			file.open(s);
 			file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
 			srand(tb);
@@ -244,6 +246,10 @@ struct game{
 	bool check_end(){
 		time_t te = time(nullptr) - tbr;
 		if(not_null(maxn - 1)){
+			if(checking){
+				cout << "INVALID" << '\n';
+				return true;
+			}
 			cout << (mode[0] != 'i' ? "\n====================YOU LOSE!==================|\n" : "\n====================GAME OVER==================|\n");
 			string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
 			while(report.size() < 47)
@@ -269,24 +275,26 @@ struct game{
 				prt_scr(canon);
 				return false;
 			}
-			cout << "\n====================YOU WIN!===================|\n";
-			string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
-			while(report.size() < 47)
-				report += " ";
-			report += "|";
-			cout << report << ":: " << jomle << '\n';
-			silent = !silent;
-			//////////// ino tooyr noskhe haye gheire dasti dorost kon/////////////////////
-			cout << "yechi bezan ta bere" << '\n';
-			getch();
-			Sleep(10000);
-			sit();
-			prt_scr(canon);
-			silent = !silent;
-			cout << (char)7;
-			cout << "press a key to continue" << '\n';
-			///////////////////////////////////////////////////////////////////////////////
-			getch();
+			if(!checking){
+				cout << "\n====================YOU WIN!===================|\n";
+				string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
+				while(report.size() < 47)
+					report += " ";
+				report += "|";
+				cout << report << ":: " << jomle << '\n';
+				/* in be kar miad
+				silent = !silent;
+				cout << "yechi bezan ta bere" << '\n';
+				getch();
+				Sleep(10000);
+				sit();
+				prt_scr(canon);
+				cout << (char)7;
+				silent = !silent;
+				cout << "press a key to continue" << '\n';
+				getch();
+				*/
+			}
 			update();
 			return true;
 		}
@@ -524,7 +532,12 @@ struct game{
 					}
 					if(checkmanual)
 						ffff << -jomle << '\n';
-					cout << "invlaid input, try again" << '\n';
+					if(checking){
+						cout << "INVALID" << '\n';
+						return;
+					}	
+					else
+						cout << "invlaid input, try again" << '\n';
 				}
 			}
 			string str = "00";
@@ -612,10 +625,6 @@ struct game{
 				int times = 1021;
 				do{
 					silent = (c == 'n');
-					if(checking){
-						cout << "silent = " << silent << '\n';
-						getch();
-					}
 					gameplay();
 				} while(--times && c == 'n');
 			}
@@ -681,9 +690,11 @@ struct game{
 			rank1 << vec[i] << '\n';
 		rank1.close();
 		mode = tmp;
-		ofstream coin("./accounts/games/" + to_string(tb) + ", " + user + ".txt");
-		for(auto &e: code)
-			coin << e << '\n';
+		if(toupper(mode[0]) == 'M'){
+			ofstream coin("./accounts/games/" + to_string(tb) + ", " + user + ".txt");
+			for(auto &e: code)
+				coin << e << '\n';
+		}
 		return;
 	}
 };
