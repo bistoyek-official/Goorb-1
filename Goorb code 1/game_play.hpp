@@ -641,8 +641,10 @@ struct game{
 	}
 
 	void update(){
-		if(checking)
+		if(checking){
 			cout << "ACCEPTED!\n";
+			return;
+		}
 		string tmp = mode;
 		if(toupper(mode[0]) == 'M')
 			mode = "infinite";
