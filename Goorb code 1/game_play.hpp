@@ -3,15 +3,16 @@
 struct game{
 
 	int maxn, N, M, same, addr, addr1, tries = 0, bot, jomle;
-	bool silent, inja = false;
+	bool silent;
 
 	ifstream file;
 
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
 	string modes[3] = {"timer", "infinite", "normal"}, mode;
-	time_t tb, tbr;
-	bool checking = true, checkmanual = false;
+	time_t tb;
+	long long tbr;
+	bool checking = false, checkmanual = false, enought = false;
 	vector<string> code;
 
 	int pts = 0, canon, ini, tl = 120, rows, X, Y, bl, blsc;
@@ -20,10 +21,6 @@ struct game{
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
 
 	int _rand(){
-		if(inja){
-			cout << "ey baba" << '\n';
-			exit(333);
-		}
 		++jomle;
 		return abs(rand()) % 720;
 	}
@@ -105,13 +102,11 @@ struct game{
 			cout << "enter time: ";
 			cin >> tb;
 		}
-		//==========begin=====================
 		N = 5, maxn = 31, M = 15, same = 720;
-		addr = 2, addr1 = 2;
+		addr = 2, addr1 = 1;
 		bl = 10, blsc = 14;
 		srand(tb);
 		jomle = 0;
-		//===========end=======================
 		if(!frombot && !checking)
 			silent = false;
 		if(checking){
@@ -121,6 +116,10 @@ struct game{
 			if(tries > 1)
 				file.close();
 			file.open(s);
+			if(!file.is_open()){
+				enought = true;
+				return;
+			}
 			file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
 			srand(tb);
 		}
@@ -282,18 +281,6 @@ struct game{
 					report += " ";
 				report += "|";
 				cout << report << ":: " << jomle << '\n';
-				/* in be kar miad
-				silent = !silent;
-				cout << "yechi bezan ta bere" << '\n';
-				getch();
-				Sleep(10000);
-				sit();
-				prt_scr(canon);
-				cout << (char)7;
-				silent = !silent;
-				cout << "press a key to continue" << '\n';
-				getch();
-				*/
 			}
 			update();
 			return true;
@@ -442,8 +429,6 @@ struct game{
 									break;
 								}
 		ok.clear();
-		if(lst.empty())
-			cout << "WTF" << '\n';
 		return;
 	}
 
@@ -468,22 +453,15 @@ struct game{
 
 	void gameplay(){
 		gen();
+		if(enought)
+			return;
 		int mvs = 0, mvs1 = 0;
-		ofstream ffff;
-		if(checkmanual)
-			ffff.open("inam shans ma1.txt");
 		while(true){
 			if(check_end())
 				break;
 			updlst();
-			if(lst.size() == 0){
-				cout << "Kurwa!\n";
-				exit(87);
-			}
 			int x, y;
-			////////////botbegin///////////////////
 			if(frombot){
-				inja = true;
 				int mn1 = 1000000021, mn2 = 1000000021;
 				x = lst[0][0], y = lst[0][1];
 				for(int i = 0; i < lst.size(); ++i){
@@ -500,15 +478,7 @@ struct game{
 					else if(mn1 == balls && mn2 == rws)
 						mn1 = rws, x = lst[i][0], y = lst[i][1];
 				}
-				if(checkmanual)
-					ffff << jomle << '\n';
-				if(!search_it(vector<int>{x, y})){
-					cout << "zaye shod" << '\n';
-					exit(9999);
-				}
-				inja  = false;
 			}
-			/////////////bot-end///////////
 			else{
 				while(true){
 					string s;
@@ -525,13 +495,8 @@ struct game{
 						continue;
 					}
 					x = s[0] - 'A', y = s[1] - 'A';
-					if(search_it(vector<int>{x, y})){
-						if(checkmanual)
-							ffff << jomle << '\n';
+					if(search_it(vector<int>{x, y}))
 						break;
-					}
-					if(checkmanual)
-						ffff << -jomle << '\n';
 					if(checking){
 						cout << "INVALID" << '\n';
 						return;
@@ -594,6 +559,18 @@ struct game{
 			char index = 'm';
 			if(!checking)
 				index = getch();
+			if(index == '!'){
+				checking = false, checkmanual = true;
+				continue;
+			}
+			if(index == '@'){
+				checking = true, checkmanual = false;
+				continue;
+			}
+			if(index == '#'){
+				checking = checkmanual = false;
+				continue;
+			}
 			if(index == '4')
 				return;
 			if(index != 'm'){
@@ -612,23 +589,30 @@ struct game{
 				}
 				else{
 					frombot = false;
-					cout << "Do you want to watch the game? (y/n) ";
+					cout << "Do you want to watch the game? (y/n)" << '\n';
 					c = getch();
 				}
 				mode = (frombot ? "Miner-Bot" : "Miner-Manual");
 				if(frombot){
 					cout << "Witch Miner-Bot?" << '\n';
 					cin >> bot;
-					cout << "Do you want to watch the game? (y/n) ";
+					cout << "Do you want to watch the game? (y/n)" << '\n';
 					c = getch();
 				}
 				int times = 1021;
+				if(frombot || c == 'n'){
+					cout << "How many tries do you want to do? (enter the number)" << '\n';
+					cin >> times;
+					if(times < 0)
+						times = 1021;
+				}
 				do{
 					silent = (c == 'n');
 					gameplay();
-				} while(--times && c == 'n');
+				} while(--times && c == 'n' && !enought);
+				enought = false;
+				tries = 0;
 			}
-			tries = 0;
 			if(checking){
 				cout << "press any key to continue ";
 				getch();
