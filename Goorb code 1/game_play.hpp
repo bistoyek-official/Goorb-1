@@ -10,8 +10,7 @@ struct game{
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
 	string modes[3] = {"timer", "infinite", "normal"}, mode;
-	time_t tb;
-	long long tbr;
+	long long tbr, tb;
 	bool checking = false, checkmanual = false, enought = false;
 	vector<string> code;
 
@@ -22,7 +21,7 @@ struct game{
 
 	int _rand(){
 		++jomle;
-		return abs(rand()) % 720;
+		return rand() % 720;
 	}
 
 	int rnd(){
