@@ -1,10 +1,14 @@
 #include "basic.hpp"
 
-long long random[2], seed, jomle, mod = 4656763;
+long long jomle, mod = 1000000021;
 
-int binpow(long long int a, long long b){
-	int res = 1;
-	a %= mod;
+long long random[18], seed[18], us[18];
+
+long long r[18] = {192, 526, 305, 980, 52, 237, 297, 366, 289, 564, 362, 937, 947, 1008, 27, 803, 229, 707};
+
+long long binpow(long long a, long long b){
+	long long res = 1;
+	b %= mod - 1;
 	while(b){
 		if(b & 1)
 			res = (res * a) % mod;
@@ -16,17 +20,25 @@ int binpow(long long int a, long long b){
 
 int _rand(){
 	++jomle;
-	random[0] = binpow((random[0] + random[1]) * seed, 21 * (jomle + seed));
-	swap(random[0], random[1]);
-	random[1] %= 243 * 243;
-	random[1] += 1;
-	return random[1] % 1024;
+	long long sum = 0;
+	for(int i = 0; i < 18; ++i)
+		sum = (sum + us[i] * binpow(random[i], seed[i])) % mod;
+	random[0] = binpow(sum, jomle);
+	for(int i = 0; i < 17; ++i)
+		swap(random[i], random[i + 1]);
+	random[17] %= 1000000009, random[17] %= 1024;
+	return random[17];
 }
 
-void _srand(long long tb){
-	seed = tb;
-	random[0] = 2, random[1] = 21;
-	jomle = 2;
+void _srand(long long tb, long long u_s){
+	for(int i = 0; i < 18; ++i){
+		us[i] = u_s % 10 + 1;
+		seed[i] = tb % 10;
+		u_s /= 10;
+		tb /= 10;
+		random[i] = r[i];
+	}
+	jomle = 18;
 	for(int i = 0; i < 100; ++i)
 		_rand();
 	return;
