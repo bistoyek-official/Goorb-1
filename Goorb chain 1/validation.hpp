@@ -72,6 +72,7 @@ struct game{
 		ini = pts = 0;
 		tbr = time(nullptr);
 		++tries;
+		long long user_serial = 0;
 		if(tries > 1)
 			file.close();
 		file.open(s);
@@ -79,8 +80,8 @@ struct game{
 			enought = true;
 			return;
 		}
-		file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
-		_srand(tb);
+		file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+		_srand(tb, user_serial);
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
 		code.push_back(to_string(tb));
 		code.push_back(to_string(N)), code.push_back(to_string(maxn)), code.push_back(to_string(M));

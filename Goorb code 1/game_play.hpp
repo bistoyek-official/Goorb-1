@@ -92,6 +92,11 @@ struct game{
 		tb = time(nullptr) + tries;
 		tbr = time(nullptr);
 		++tries;
+		long long user_serial = 0;
+		if(to_upper(mode[0]) == 'M'){
+			cout << "enter your serial code: ";
+			cin >> user_serial;
+		}
 		if(checkmanual){
 			cout << "enter time: ";
 			cin >> tb;
@@ -102,7 +107,7 @@ struct game{
 			N = 5, maxn = 31, M = 15, same = 720;
 			addr = 2, addr1 = 2;
 			bl = 10, blsc = 14;
-			_srand(tb);
+			_srand(tb, user_serial);
 		}
 		else{
 			cout << "\n~ enter file dir: ";
@@ -115,12 +120,12 @@ struct game{
 				enought = true;
 				return;
 			}
-			file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
-			_srand(tb);
+			file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+			_srand(tb, user_serial);
 		}
 		rows = 10;
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
-		code.push_back(to_string(tb));
+		code.push_back(to_string(user_serial)), code.push_back(to_string(tb));
 		code.push_back(to_string(N)), code.push_back(to_string(maxn)), code.push_back(to_string(M));
 		code.push_back(to_string(same)), code.push_back(to_string(addr)), code.push_back(to_string(addr1));
 		code.push_back(to_string(bl)), code.push_back(to_string(blsc));

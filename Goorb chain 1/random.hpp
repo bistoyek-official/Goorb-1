@@ -33,7 +33,7 @@ int _rand(){
 void _srand(long long tb, long long u_s){
 	for(int i = 0; i < 18; ++i){
 		us[i] = u_s % 10 + 1;
-		seed[i] = tb % 10;
+		seed[i] = tb % 10 + 1;
 		u_s /= 10;
 		tb /= 10;
 		random[i] = r[i];

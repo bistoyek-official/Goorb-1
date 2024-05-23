@@ -1,7 +1,7 @@
 #include "random.hpp"
 
 int main(){
-	long long num, sum = 0, time_b = time(0), cnt[1024] = {}, serial = 112233445566778899LL;
+	long long num, sum = 0, time_b = time(0), cnt[1024] = {}, serial = 21;
 	_srand(time_b, serial);
 	for(int i = 0; i < 1600000; ++i){
 		num = _rand();
@@ -11,10 +11,10 @@ int main(){
 	long double var = 0;
 	for(int i = 0; i < 1024; ++i)
 		var += cnt[i] * (i - 511.5) * (i - 511.5); 
-	cout << "time:   " << time_b << '\n';
-	cout << "serial: " << serial << '\n';
-	cout << "E(X):   " << sum / 1600000.0 << '\n';
-	cout << "var(X): " << var / 1600000.0 << '\n';
+	cout << "time:         " << time_b << '\n';
+	cout << "serial:       " << serial << '\n';
+	cout << "E(X):         " << sum / 1600000.0 << '\n';
+	cout << "sqrt(var(X)): " << sqrt(var / 1600000.0) << '\n';
 	cout << "------------------------------------------------\n";
 	for(int i = 0; i < 1024; ++i){
 		cout << i << ": " << cnt[i] << " ]] ";
