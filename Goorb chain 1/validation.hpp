@@ -1,4 +1,4 @@
-#include "basic.hpp"
+#include "random.hpp"
 
 struct game{
 
@@ -15,10 +15,6 @@ struct game{
 	int pts = 0, tries = 0, canon, ini;
 
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
-
-	int _rand(){
-		return abs(rand()) % 720;
-	}
 
 	int rnd(){
 		int res = 0, k;
@@ -84,7 +80,7 @@ struct game{
 			return;
 		}
 		file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
-		srand(tb);
+		_srand(tb);
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
 		code.push_back(to_string(tb));
 		code.push_back(to_string(N)), code.push_back(to_string(maxn)), code.push_back(to_string(M));

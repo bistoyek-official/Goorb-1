@@ -1,8 +1,8 @@
-#include "basic.hpp"
+#include "random.hpp"
 
 struct game{
 
-	int maxn, N, M, same, addr, addr1, tries = 0, bot, jomle;
+	int maxn, N, M, same, addr, addr1, tries = 0, bot;
 	bool silent;
 
 	ifstream file;
@@ -18,11 +18,6 @@ struct game{
 	bool frombot;
 
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
-
-	int _rand(){
-		++jomle;
-		return rand() % 720;
-	}
 
 	int rnd(){
 		int res = 0, k;
@@ -101,14 +96,15 @@ struct game{
 			cout << "enter time: ";
 			cin >> tb;
 		}
-		N = 5, maxn = 31, M = 15, same = 720;
-		addr = 2, addr1 = 1;
-		bl = 10, blsc = 14;
-		srand(tb);
-		jomle = 0;
-		if(!frombot && !checking)
-			silent = false;
-		if(checking){
+		if(!checking){
+			if(!frombot)
+				silent = false;
+			N = 5, maxn = 31, M = 15, same = 720;
+			addr = 2, addr1 = 2;
+			bl = 10, blsc = 14;
+			_srand(tb);
+		}
+		else{
 			cout << "\n~ enter file dir: ";
 			string s;
 			getline(cin, s);
@@ -120,7 +116,7 @@ struct game{
 				return;
 			}
 			file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
-			srand(tb);
+			_srand(tb);
 		}
 		rows = 10;
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
