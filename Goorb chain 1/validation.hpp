@@ -8,8 +8,7 @@ struct game{
 
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
-	time_t tb;
-	long long tbr;
+	long long tbr, tb;
 	bool enought = false;
 	vector<string> code;
 
