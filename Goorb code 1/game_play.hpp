@@ -1,8 +1,8 @@
-#include "basic.hpp"
+#include "random.hpp"
 
 struct game{
 
-	int maxn, N, M, same, addr, addr1, tries = 0, bot, jomle;
+	int maxn, N, M, same, addr, addr1, tries = 0, bot;
 	bool silent;
 
 	ifstream file;
@@ -10,7 +10,7 @@ struct game{
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
 	string modes[3] = {"timer", "infinite", "normal"}, mode;
-	long long tbr, tb;
+	long long tbr, tb, user_serial;
 	bool checking = false, checkmanual = false, enought = false;
 	vector<string> code;
 
@@ -18,11 +18,6 @@ struct game{
 	bool frombot;
 
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
-
-	int _rand(){
-		++jomle;
-		return rand() % 720;
-	}
 
 	int rnd(){
 		int res = 0, k;
@@ -101,14 +96,15 @@ struct game{
 			cout << "enter time: ";
 			cin >> tb;
 		}
-		N = 5, maxn = 31, M = 15, same = 720;
-		addr = 2, addr1 = 1;
-		bl = 10, blsc = 14;
-		srand(tb);
-		jomle = 0;
-		if(!frombot && !checking)
-			silent = false;
-		if(checking){
+		if(!checking){
+			if(!frombot)
+				silent = false;
+			N = 5, maxn = 31, M = 17, same = 512;
+			addr = 4, addr1 = 4;
+			bl = 5, blsc = 7;
+			_srand(tb, user_serial);
+		}
+		else{
 			cout << "\n~ enter file dir: ";
 			string s;
 			getline(cin, s);
@@ -119,12 +115,12 @@ struct game{
 				enought = true;
 				return;
 			}
-			file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
-			srand(tb);
+			file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+			_srand(tb, user_serial);
 		}
 		rows = 10;
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
-		code.push_back(to_string(tb));
+		code.push_back(to_string(user_serial)), code.push_back(to_string(tb));
 		code.push_back(to_string(N)), code.push_back(to_string(maxn)), code.push_back(to_string(M));
 		code.push_back(to_string(same)), code.push_back(to_string(addr)), code.push_back(to_string(addr1));
 		code.push_back(to_string(bl)), code.push_back(to_string(blsc));
@@ -254,8 +250,6 @@ struct game{
 				report += " ";
 			report += "|";
 			cout << report << ":: " << jomle << '\n';
-			if(checkmanual)
-				update();
 			return true;
 		}
 		if(mode == "timer" && time(0) - tbr > tl){
@@ -274,12 +268,14 @@ struct game{
 				return false;
 			}
 			if(!checking){
+				c_col(10);
 				cout << "\n====================YOU WIN!===================|\n";
 				string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
 				while(report.size() < 47)
 					report += " ";
 				report += "|";
 				cout << report << ":: " << jomle << '\n';
+				c_col(15);
 			}
 			update();
 			return true;
@@ -481,19 +477,25 @@ struct game{
 			else{
 				while(true){
 					string s;
-					if(!checking)
-						cin >> s;
+					if(!checking){
+						if(toupper(mode[0]) != 'M')
+							cin >> s;
+						else
+							cin >> x >> y;
+					}
 					else
 						file >> s;
-					if(s == "q"){
-						cout << "\n======GAME OVER=====\n";
-						return;
+					if(toupper(mode[0]) != 'M'){
+						if(s == "q"){
+							cout << "\n======GAME OVER=====\n";
+							return;
+						}
+						if(s == "s"){
+							sit();
+							continue;
+						}
+						x = s[0] - 'A', y = s[1] - 'A';
 					}
-					if(s == "s"){
-						sit();
-						continue;
-					}
-					x = s[0] - 'A', y = s[1] - 'A';
 					if(search_it(vector<int>{x, y}))
 						break;
 					if(checking){
@@ -504,9 +506,7 @@ struct game{
 						cout << "invlaid input, try again" << '\n';
 				}
 			}
-			string str = "00";
-			str[0] = (char)(x + 'A');
-			str[1] = (char)(y + 'A');
+			string str = to_string(x) + " " + to_string(y);
 			code.push_back(str);
 			X = x, Y = y;
 			a[x][y] = canon, blast[x][y] = false, exs[x][y] = true;
@@ -576,6 +576,7 @@ struct game{
 				if('0' >= index || index >= '4')
 					continue;
 				mode = modes[index - '1'];
+				user_serial = 0;
 				gameplay();
 				update();
 			}
@@ -598,8 +599,10 @@ struct game{
 					cout << "Do you want to watch the game? (y/n)" << '\n';
 					c = getch();
 				}
+				cout << "enter your serial code: ";
+				cin >> user_serial;
 				int times = 1021;
-				if(frombot || c == 'n'){
+				if((frombot && c == 'n') || checking){
 					cout << "How many tries do you want to do? (enter the number)" << '\n';
 					cin >> times;
 					if(times < 0)
