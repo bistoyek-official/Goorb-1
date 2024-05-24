@@ -1,4 +1,4 @@
-#include "basic.hpp"
+#include "random.hpp"
 
 struct game{
 
@@ -15,10 +15,6 @@ struct game{
 	int pts = 0, tries = 0, canon, ini;
 
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
-
-	int _rand(){
-		return abs(rand()) % 720;
-	}
 
 	int rnd(){
 		int res = 0, k;
@@ -76,6 +72,7 @@ struct game{
 		ini = pts = 0;
 		tbr = time(nullptr);
 		++tries;
+		long long user_serial = 0;
 		if(tries > 1)
 			file.close();
 		file.open(s);
@@ -83,8 +80,8 @@ struct game{
 			enought = true;
 			return;
 		}
-		file >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
-		srand(tb);
+		file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+		_srand(tb, user_serial);
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
 		code.push_back(to_string(tb));
 		code.push_back(to_string(N)), code.push_back(to_string(maxn)), code.push_back(to_string(M));
@@ -264,20 +261,13 @@ struct game{
 			int x, y;
 			while(true){
 				string s;
-				file >> s;
-				if(s.size() != 2){
-					cout << "INVALID" << '\n';
-					return;
-				}
-				x = s[0] - 'A', y = s[1] - 'A';
+				file >> x >> y;
 				if(search_it(vector<int>{x, y}))
 					break;
 				cout << "INVALID" << '\n';
 				return;
 			}
-			string str = "00";
-			str[0] = (char)(x + 'A');
-			str[1] = (char)(y + 'A');
+			string str = to_string(x) + " " + to_string(y);
 			code.push_back(str);
 			a[x][y] = canon, blast[x][y] = false, exs[x][y] = true;
 			if(!check_good({x, y})){
