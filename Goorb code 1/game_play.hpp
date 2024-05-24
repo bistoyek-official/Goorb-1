@@ -99,9 +99,9 @@ struct game{
 		if(!checking){
 			if(!frombot)
 				silent = false;
-			N = 5, maxn = 31, M = 15, same = 720;
-			addr = 3, addr1 = 2;
-			bl = 10, blsc = 14;
+			N = 5, maxn = 31, M = 17, same = 512;
+			addr = 4, addr1 = 4;
+			bl = 5, blsc = 7;
 			_srand(tb, user_serial);
 		}
 		else{
@@ -268,12 +268,14 @@ struct game{
 				return false;
 			}
 			if(!checking){
+				c_col(10);
 				cout << "\n====================YOU WIN!===================|\n";
 				string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
 				while(report.size() < 47)
 					report += " ";
 				report += "|";
 				cout << report << ":: " << jomle << '\n';
+				c_col(15);
 			}
 			update();
 			return true;
@@ -475,19 +477,25 @@ struct game{
 			else{
 				while(true){
 					string s;
-					if(!checking)
-						cin >> s;
+					if(!checking){
+						if(toupper(mode[0]) != 'M')
+							cin >> s;
+						else
+							cin >> x >> y;
+					}
 					else
 						file >> s;
-					if(s == "q"){
-						cout << "\n======GAME OVER=====\n";
-						return;
+					if(toupper(mode[0]) != 'M'){
+						if(s == "q"){
+							cout << "\n======GAME OVER=====\n";
+							return;
+						}
+						if(s == "s"){
+							sit();
+							continue;
+						}
+						x = s[0] - 'A', y = s[1] - 'A';
 					}
-					if(s == "s"){
-						sit();
-						continue;
-					}
-					x = s[0] - 'A', y = s[1] - 'A';
 					if(search_it(vector<int>{x, y}))
 						break;
 					if(checking){
@@ -498,9 +506,7 @@ struct game{
 						cout << "invlaid input, try again" << '\n';
 				}
 			}
-			string str = "00";
-			str[0] = (char)(x + 'A');
-			str[1] = (char)(y + 'A');
+			string str = to_string(x) + " " + to_string(y);
 			code.push_back(str);
 			X = x, Y = y;
 			a[x][y] = canon, blast[x][y] = false, exs[x][y] = true;

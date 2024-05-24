@@ -261,20 +261,13 @@ struct game{
 			int x, y;
 			while(true){
 				string s;
-				file >> s;
-				if(s.size() != 2){
-					cout << "INVALID" << '\n';
-					return;
-				}
-				x = s[0] - 'A', y = s[1] - 'A';
+				file >> x >> y;
 				if(search_it(vector<int>{x, y}))
 					break;
 				cout << "INVALID" << '\n';
 				return;
 			}
-			string str = "00";
-			str[0] = (char)(x + 'A');
-			str[1] = (char)(y + 'A');
+			string str = to_string(x) + " " + to_string(y);
 			code.push_back(str);
 			a[x][y] = canon, blast[x][y] = false, exs[x][y] = true;
 			if(!check_good({x, y})){

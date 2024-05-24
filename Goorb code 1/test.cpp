@@ -1,10 +1,12 @@
 #include "random.hpp"
 
 int main(){
-	int sum = 0;
-	_srand(time(0), 123456789987654321LL);
-	for(int i = 0; i < 1000; ++i)
-		sum += _rand();
-	cout << sum / 1000.0 << '\n';
+	int sum = 0, sum1 = 0;
+	_srand(0, 21LL);
+	while(true){
+		_rand();
+		if(jomle % 1000000 == 0)
+			cout << "#";
+	}
 	return 0;
 }

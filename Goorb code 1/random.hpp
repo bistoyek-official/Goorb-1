@@ -1,10 +1,10 @@
 #include "basic.hpp"
 
-long long jomle, mod = 1000000021;
+long long jomle, mod = (1 << 16) + 1;
 
 long long random[18], seed[18], us[18];
 
-long long r[18] = {192, 526, 305, 980, 52, 237, 297, 366, 289, 564, 362, 937, 947, 1008, 27, 803, 229, 707};
+long long r[18];
 
 long long binpow(long long a, long long b){
 	long long res = 1;
@@ -23,10 +23,9 @@ int _rand(){
 	long long sum = 1;
 	for(int i = 0; i < 18; ++i)
 		sum = (sum + us[i] * binpow(random[i], seed[i])) % mod;
-	random[0] = binpow(sum + (int)(sum == 0), jomle);
+	random[0] = binpow(sum + (int)(sum == 0), jomle) % 1024;
 	for(int i = 0; i < 17; ++i)
 		swap(random[i], random[i + 1]);
-	random[17] %= 1000000009, random[17] %= 1024;
 	return random[17];
 }
 
@@ -39,7 +38,7 @@ void _srand(long long tb, long long u_s){
 		random[i] = r[i];
 	}
 	jomle = 18;
-	for(int i = 0; i < 100; ++i)
+	for(int i = 0; i < 1024; ++i)
 		_rand();
 	return;
 }
