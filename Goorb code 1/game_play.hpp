@@ -10,7 +10,7 @@ struct game{
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
 	string modes[3] = {"timer", "infinite", "normal"}, mode;
-	long long tbr, tb;
+	long long tbr, tb, user_serial;
 	bool checking = false, checkmanual = false, enought = false;
 	vector<string> code;
 
@@ -92,11 +92,6 @@ struct game{
 		tb = time(nullptr) + tries;
 		tbr = time(nullptr);
 		++tries;
-		long long user_serial = 0;
-		if(to_upper(mode[0]) == 'M'){
-			cout << "enter your serial code: ";
-			cin >> user_serial;
-		}
 		if(checkmanual){
 			cout << "enter time: ";
 			cin >> tb;
@@ -105,7 +100,7 @@ struct game{
 			if(!frombot)
 				silent = false;
 			N = 5, maxn = 31, M = 15, same = 720;
-			addr = 2, addr1 = 2;
+			addr = 3, addr1 = 2;
 			bl = 10, blsc = 14;
 			_srand(tb, user_serial);
 		}
@@ -255,8 +250,6 @@ struct game{
 				report += " ";
 			report += "|";
 			cout << report << ":: " << jomle << '\n';
-			if(checkmanual)
-				update();
 			return true;
 		}
 		if(mode == "timer" && time(0) - tbr > tl){
@@ -577,6 +570,7 @@ struct game{
 				if('0' >= index || index >= '4')
 					continue;
 				mode = modes[index - '1'];
+				user_serial = 0;
 				gameplay();
 				update();
 			}
@@ -599,8 +593,10 @@ struct game{
 					cout << "Do you want to watch the game? (y/n)" << '\n';
 					c = getch();
 				}
+				cout << "enter your serial code: ";
+				cin >> user_serial;
 				int times = 1021;
-				if(frombot || c == 'n'){
+				if((frombot && c == 'n') || checking){
 					cout << "How many tries do you want to do? (enter the number)" << '\n';
 					cin >> times;
 					if(times < 0)
