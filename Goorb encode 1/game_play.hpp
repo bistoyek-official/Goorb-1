@@ -7,6 +7,9 @@ struct game{
 
 	ifstream file;
 
+	vector<long long> factors; 
+	int res;
+
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
 	string modes[3] = {"timer", "infinite", "normal"}, mode;
@@ -18,6 +21,14 @@ struct game{
 	bool frombot;
 
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
+
+	void upd_res(){
+		for(int i = 0; i < maxn; ++i)
+			for(int j = 0; j < M; ++j)
+				res += a[i][j];
+		res %= 1024;
+		return;
+	}
 
 	int rnd(){
 		int res = 0, k;
@@ -100,7 +111,7 @@ struct game{
 			if(!frombot)
 				silent = false;
 			N = 5, maxn = 31, M = 16, same = 512;
-			addr = 4, addr1 = 4;
+			addr = 2, addr1 = 2;
 			bl = 5, blsc = 7;
 			_srand(tb, user_serial);
 		}
@@ -119,6 +130,10 @@ struct game{
 			_srand(tb, user_serial);
 		}
 		rows = 10;
+		
+		res = 0;
+		factors = vector<long long>{user_serial, tb, N, maxn, M, same, addr, addr1, bl, blsc};
+		
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
 		code.push_back(to_string(user_serial)), code.push_back(to_string(tb));
 		code.push_back(to_string(N)), code.push_back(to_string(maxn)), code.push_back(to_string(M));
@@ -445,9 +460,9 @@ struct game{
 	}
 
 	bool search_it(vector<int> cor){
-		for(auto &e: lst)
-			if(cor[0] == e[0] && cor[1] == e[1])
-				return true;
+		for(int i = 0; i < lst.size(); ++i)
+			if(cor[0] == lst[i][0] && cor[1] == lst[i][1])
+				return i + 1;
 		return false;
 	}
 
@@ -457,8 +472,11 @@ struct game{
 			return;
 		int mvs = 0, mvs1 = 0;
 		while(true){
-			if(check_end())
+			upd_res();
+			if(check_end()){
+				appit(factors, res);
 				break;
+			}
 			updlst();
 			int x, y;
 			if(frombot){
@@ -478,6 +496,9 @@ struct game{
 					else if(mn1 == balls && mn2 == rws)
 						mn1 = rws, x = lst[i][0], y = lst[i][1];
 				}
+				int s_it = search_it(vector<int>{x, y});
+				while(s_it--)
+					_rand();
 			}
 			else{
 				while(true){
@@ -501,8 +522,12 @@ struct game{
 						}
 						x = s[0] - 'A', y = s[1] - 'A';
 					}
-					if(search_it(vector<int>{x, y}))
+					int s_it = search_it(vector<int>{x, y});
+					if(s_it){
+						while(s_it--)
+							_rand();
 						break;
+					}
 					if(checking){
 						cout << "INVALID" << '\n';
 						return;
@@ -522,13 +547,17 @@ struct game{
 				else if(mode != "normal" && toupper(mode[0]) != 'M' && rows-- >= 0)
 					add_row();
 				prt_scr(rnd());
-				if(check_end())
-					return;
+				if(check_end()){
+					appit(factors, res);
+					break;
+				}
 				if(mode != "normal" && mvs1 % addr1 == 0)
 					add_row();
 				prt_scr(canon);
-				if(check_end())
-					return;
+				if(check_end()){
+					appit(factors, res);
+					break;
+				}
 				continue;
 			}
 			++mvs;
@@ -617,6 +646,7 @@ struct game{
 					silent = (c == 'n');
 					gameplay();
 				} while(--times && c == 'n' && !enought);
+				saveit();
 				enought = false;
 				tries = 0;
 			}
