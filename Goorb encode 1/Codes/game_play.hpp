@@ -269,12 +269,14 @@ struct game{
 				cout << "INVALID" << '\n';
 				return true;
 			}
-			cout << (mode[0] != 'i' ? "\n====================YOU LOSE!==================|\n" : "\n====================GAME OVER==================|\n");
-			string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
-			while(report.size() < 47)
-				report += " ";
-			report += "|";
-			cout << report << ":: " << jomle << '\n';
+			if(bank){
+				cout << (mode[0] != 'i' ? "\n====================YOU LOSE!==================|\n" : "\n====================GAME OVER==================|\n");
+				string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
+				while(report.size() < 47)
+					report += " ";
+				report += "|";
+				cout << report << ":: " << jomle << '\n';
+			}
 			return true;
 		}
 		if(mode == "timer" && time(0) - tbr > tl){
@@ -292,7 +294,7 @@ struct game{
 				prt_scr(canon);
 				return false;
 			}
-			if(!checking){
+			if(!checking && bank){
 				c_col(10);
 				cout << "\n====================YOU WIN!===================|\n";
 				string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
@@ -302,7 +304,8 @@ struct game{
 				cout << report << ":: " << jomle << '\n';
 				c_col(15);
 			}
-			update();
+			if(bank)
+				update();
 			return true;
 		}
 		return false;
@@ -594,12 +597,21 @@ struct game{
 		return;
 	}
 
-	void play(bool bank = true){
+	void play(bool bank = true, l = 0){
 		this->bank = bank;
 		if(!bank){
 			decode.clear();
-			ifstream f("../reult.txt");
-			//other things
+			int l = 0;
+			tries = 0;
+			mode = "Miner-bot";
+			frombot = true;
+			silent = true;
+			bot = 1;//key
+			file.open("./factors.txt");
+			while(l--)
+				gameplay();
+			file.close();
+			return;
 		}
 		while(true){
 			frombot = false;
