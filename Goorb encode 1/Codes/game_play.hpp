@@ -18,7 +18,7 @@ struct game{
 	vector<string> code;
 
 	int pts = 0, canon, ini, tl = 120, rows, X, Y, bl, blsc;
-	bool frombot;
+	bool frombot, bank;
 
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
 
@@ -459,11 +459,11 @@ struct game{
 		return;
 	}
 
-	bool search_it(vector<int> cor){
+	int search_it(vector<int> cor){
 		for(int i = 0; i < lst.size(); ++i)
 			if(cor[0] == lst[i][0] && cor[1] == lst[i][1])
 				return i + 1;
-		return false;
+		return 0;
 	}
 
 	void gameplay(){
@@ -474,7 +474,8 @@ struct game{
 		while(true){
 			upd_res();
 			if(check_end()){
-				appit(factors, res);
+				if(frombot && bot == 1 && bank)
+					appit(factors, res);
 				break;
 			}
 			updlst();
@@ -548,14 +549,16 @@ struct game{
 					add_row();
 				prt_scr(rnd());
 				if(check_end()){
-					appit(factors, res);
+					if(frombot && bot == 1 && bank)
+						appit(factors, res);
 					break;
 				}
 				if(mode != "normal" && mvs1 % addr1 == 0)
 					add_row();
 				prt_scr(canon);
 				if(check_end()){
-					appit(factors, res);
+					if(frombot && bot == 1 && bank)
+						appit(factors, res);
 					break;
 				}
 				continue;
@@ -576,7 +579,8 @@ struct game{
 		return;
 	}
 
-	void play(){
+	void play(bool bank = true){
+		this->bank = bank;
 		while(true){
 			frombot = false;
 			tries = 0;
@@ -646,7 +650,8 @@ struct game{
 					silent = (c == 'n');
 					gameplay();
 				} while(--times && c == 'n' && !enought);
-				saveit();
+				if(frombot && bot == 1 && bank)
+					saveit();
 				enought = false;
 				tries = 0;
 			}

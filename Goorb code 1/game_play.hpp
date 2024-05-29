@@ -444,11 +444,11 @@ struct game{
 		return;
 	}
 
-	bool search_it(vector<int> cor){
-		for(auto &e: lst)
-			if(cor[0] == e[0] && cor[1] == e[1])
-				return true;
-		return false;
+	int search_it(vector<int> cor){
+		for(int i = 0; i < lst.size(); ++i)
+			if(cor[0] == lst[i][0] && cor[1] == lst[i][1])
+				return i + 1;
+		return 0;
 	}
 
 	void gameplay(){
@@ -478,6 +478,9 @@ struct game{
 					else if(mn1 == balls && mn2 == rws)
 						mn1 = rws, x = lst[i][0], y = lst[i][1];
 				}
+				int s_it = search_it({x, y});
+				while(s_it--)
+					_rand();
 			}
 			else{
 				while(true){
@@ -501,12 +504,16 @@ struct game{
 						}
 						x = s[0] - 'A', y = s[1] - 'A';
 					}
-					if(search_it(vector<int>{x, y}))
+					int s_it = search_it({x, y});
+					if(s_it){
+						while(s_it--)
+							_rand();
 						break;
+					}
 					if(checking){
 						cout << "INVALID" << '\n';
 						return;
-					}	
+					}
 					else
 						cout << "invlaid input, try again" << '\n';
 				}

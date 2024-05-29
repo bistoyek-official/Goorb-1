@@ -242,11 +242,11 @@ struct game{
 		return;
 	}
 
-	bool search_it(vector<int> cor){
-		for(auto &e: lst)
-			if(cor[0] == e[0] && cor[1] == e[1])
-				return true;
-		return false;
+	int search_it(vector<int> cor){
+		for(int i = 0; i < lst.size(); ++i)
+			if(cor[0] == lst[i][0] && cor[1] == lst[i][1])
+				return i + 1;
+		return 0;
 	}
 
 	void gameplay(){
@@ -259,11 +259,13 @@ struct game{
 				break;
 			updlst();
 			int x, y;
-			while(true){
-				string s;
-				file >> x >> y;
-				if(search_it(vector<int>{x, y}))
-					break;
+			string s;
+			file >> x >> y;
+			int s_it = search_it({x, y});
+			if(s_it)
+				while(s_it--)
+					_rand();
+			else{
 				cout << "INVALID" << '\n';
 				return;
 			}
