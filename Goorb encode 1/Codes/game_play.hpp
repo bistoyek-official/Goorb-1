@@ -8,6 +8,7 @@ struct game{
 	ifstream file;
 
 	vector<long long> factors; 
+	vector<int> decode;
 	int res;
 
 	vector<vector<int>> a, lst, ok;
@@ -103,6 +104,10 @@ struct game{
 		tb = time(nullptr) + tries;
 		tbr = time(nullptr);
 		++tries;
+		if(!bank){
+			file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+			_srand(tb, user_serial);
+		}
 		if(checkmanual){
 			cout << "enter time: ";
 			cin >> tb;
@@ -459,11 +464,17 @@ struct game{
 		return;
 	}
 
+	bool cmp(vector<int> cor1, vector<int>cor2){
+		if(cor1[0] < cor2[0])
+			return true;
+		return cor1[1] < cor2[1]; 
+	}
+
 	int search_it(vector<int> cor){
-		for(int i = 0; i < lst.size(); ++i)
-			if(cor[0] == lst[i][0] && cor[1] == lst[i][1])
-				return i + 1;
-		return 0;
+		auto poz = lower_bound(lst.begin(), lst.end(), cor, cmp);
+		if(*poz != cor)
+			return 0;
+		return (int)(poz - lst.begin() + 1)
 	}
 
 	void gameplay(){
@@ -576,11 +587,20 @@ struct game{
 				add_row();
 			prt_scr(rnd());
 		}
+		if(!bank){
+			decode.push_back(res / 32);
+			decode.push_back(res % 32);
+		}
 		return;
 	}
 
 	void play(bool bank = true){
 		this->bank = bank;
+		if(!bank){
+			decode.clear();
+			ifstream f("../reult.txt");
+			//other things
+		}
 		while(true){
 			frombot = false;
 			tries = 0;
