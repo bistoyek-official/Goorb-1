@@ -23,6 +23,7 @@ struct game{
 	void upd_res(int pos);
 	int cmp(int i, int sen);
 	void fill_factors();
+	void set_factors();
 	string map_it();
 
 	int rnd(){
@@ -76,7 +77,7 @@ struct game{
 
 	void gen(){
 		if(decode)
-			file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+			set_factors();
 		else
 			fill_factors();
 		mvs = mvs1 = res = ini = pts = 0;

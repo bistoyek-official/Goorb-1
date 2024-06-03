@@ -34,6 +34,11 @@ void gen_map_list(){
 	return;
 }
 
+void game::set_factors(){
+	file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+	return;
+}
+
 void game::fill_factors(){
 	factors.clear();
 	maxn = rand() % 50 + 25;
