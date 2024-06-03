@@ -81,7 +81,7 @@ struct game{
 		}
 		file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
 		_srand(tb, user_serial);
-		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
+		a.clear(), exs.clear(), blast.clear(), lst.clear();
 		for(int i = 0; i < maxn; ++i){
 			a.push_back({}), exs.push_back({}), blast.push_back({});
 			for(int j = 0; j < M; ++j)
