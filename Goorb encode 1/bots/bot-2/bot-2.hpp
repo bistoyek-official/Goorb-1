@@ -1,4 +1,4 @@
-#include "../alg.hpp"
+#include "../../alg.hpp"
 
 void init(){
 	K = 1024;

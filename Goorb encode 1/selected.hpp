@@ -1,1 +1,1 @@
-#include "./bots/bot-2.hpp"
+#include "./bots/bot-2/bot-2.hpp"

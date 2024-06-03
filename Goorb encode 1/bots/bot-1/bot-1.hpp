@@ -1,8 +1,8 @@
-#include "../alg.hpp"
+#include "../../alg.hpp"
 
 void init(){
 	K = 1024;
-	botsname = "bot-2";
+	botsname = "bot-1";
 	decode = vector<vector<node>>(K);
 	rescount = vector<int>(K);
 	return;
