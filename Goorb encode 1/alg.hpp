@@ -1,19 +1,29 @@
-#include "random.hpp"
+#include "note.hpp"
 
 struct game{
 
-	int maxn, N, M, same, addr, addr1, bl, blsc;
+	int maxn, N, M, same, addr, addr1, bl, blsc, res;
+	
+	long long tb, user_serial;
 
 	ifstream file;
+	
+	vector<long long> factors;
 
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
-	long long tbr, tb;
-	bool enought = false;
+	vector<int> code;
+	bool enough = false, decode;
 
-	int pts = 0, tries = 0, canon, ini;
-
+	int pts, mvs, mvs1, tries = 0, canon, ini;
+	
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
+
+	vector<int> bot();
+	void upd_res(int pos);
+	int cmp(int i, int sen);
+	void fill_factors();
+	string map_it();
 
 	int rnd(){
 		int res = 0, k;
@@ -65,23 +75,18 @@ struct game{
 	}
 
 	void gen(){
-		cout << "\n~ enter file dir: ";
-		string s;
-		getline(cin, s);
-		ini = pts = 0;
-		tbr = time(nullptr);
+		if(decode)
+			file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+		else
+			fill_factors();
+		mvs = mvs1 = res = ini = pts = 0;
 		++tries;
-		long long user_serial = 0;
-		if(tries > 1)
-			file.close();
-		file.open(s);
-		if(!file.is_open()){
-			enought = true;
-			return;
-		}
-		file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
 		_srand(tb, user_serial);
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
+		code.push_back(tb);
+		code.push_back(N), code.push_back(maxn), code.push_back(M);
+		code.push_back(same), code.push_back(addr), code.push_back(addr1);
+		code.push_back(bl), code.push_back(blsc);
 		for(int i = 0; i < maxn; ++i){
 			a.push_back({}), exs.push_back({}), blast.push_back({});
 			for(int j = 0; j < M; ++j)
@@ -109,14 +114,8 @@ struct game{
 	}
 
 	bool check_end(){
-		if(not_null(maxn - 1)){
-			cout << "INVALID" << '\n';
+		if(not_null(maxn - 1) || !not_null(0))
 			return true;
-		}
-		if(!not_null(0)){
-			update();
-			return true;
-		}
 		return false;
 	}
 
@@ -253,54 +252,66 @@ struct game{
 
 	void gameplay(){
 		gen();
-		if(enought)
-			return;
-		int mvs = 0, mvs1 = 0;
+		upd_res(0);
 		while(true){
+			upd_res(1);
 			if(check_end())
-				return;
+				break;
 			updlst();
-			int x, y;
-			file >> x >> y;
-			int s_it = search_it({x, y});
-			if(s_it)
-				while(s_it--)
-					_rand();
-			else{
-				cout << "INVALID" << '\n';
-				return;
+			vector<int> x = bot();
+			if(x.empty()){
+				upd_res(2);
+				break;
 			}
-			a[x][y] = canon, blast[x][y] = false, exs[x][y] = true;
-			if(!check_good({x, y})){
+			upd_res(3);
+			int s_it = search_it(x);
+			while(s_it--)
+				_rand();
+			code.push_back(x[0]), code.push_back(x[1]);
+			a[x[0]][x[1]] = canon, blast[x[0]][x[1]] = false, exs[x[0]][x[1]] = true;
+			if(!check_good(x)){
 				++mvs1;
 				upd_sit(rnd());
+				upd_res(4);
 				if(mvs1 % addr1 == 0)
 					add_row();
 				if(check_end())
-					return;
+					break;
 				continue;
 			}
 			++mvs;
-			dfs_blast({x, y}), --pts;
+			dfs_blast(x), --pts;
 			fall();
 			upd_sit(canon);
 			upd_rnd();
 			if(mvs % addr == 0)
 				add_row();
 			canon = rnd();
+			upd_res(5);
 		}
+		if(!decode)
+			enough = add_it(factors, res);
+		upd_res(6);
 		return;
 	}
 
-	void play(){
-		int times = 1021;
-		while(--times && !enought)
-			gameplay();
-		return;
-	}
-
-	void update(){
-		cout << "ACCEPTED!\n";
+	void play(string dir = "", int times = 21){
+		decode = !dir.empty();
+		if(decode){
+			file.open(dir + "encoded.txt");
+			ofstream f(dir + "decoded.txt");
+			while(times--){
+				gameplay();
+				f << map_it();
+			}
+			file.close();
+			f.close();
+		}
+		else{
+			while(!enough || (times-- > 0))
+				gameplay();
+			flush_it();
+		}
 		return;
 	}
 };

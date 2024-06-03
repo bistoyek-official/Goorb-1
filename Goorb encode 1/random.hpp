@@ -1,4 +1,4 @@
-#include "note.hpp"
+#include "basic.hpp"
 
 long long jomle, mod = (1 << 16) + 1;
 

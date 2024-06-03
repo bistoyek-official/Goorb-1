@@ -1,6 +1,10 @@
-#include <bits/stdc++.h>
-#include <conio.h>
-#include <windows.h>
+#include<iostream>
+#include<vector>
+#include<string>
+#include<fstream>
+#include<time.h>
+#include<conio.h>
+#include<algorithm>
 using namespace std;
 
 /*

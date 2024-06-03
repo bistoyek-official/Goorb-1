@@ -11,7 +11,7 @@ struct game{
 	vector<vector<bool>> exs, blast;
 	string modes[3] = {"timer", "infinite", "normal"}, mode;
 	long long tbr, tb, user_serial;
-	bool checking = false, checkmanual = false, enought = false;
+	bool checking = false, checkmanual = false, enough = false;
 	vector<string> code;
 
 	int pts = 0, canon, ini, tl = 120, rows, X, Y, bl, blsc;
@@ -101,7 +101,7 @@ struct game{
 				silent = false;
 			N = 5, maxn = 31, M = 16, same = 512;
 			addr = 4, addr1 = 4;
-			bl = 5, blsc = 7;
+			bl = 10, blsc = 14;
 			_srand(tb, user_serial);
 		}
 		else{
@@ -112,7 +112,7 @@ struct game{
 				file.close();
 			file.open(s);
 			if(!file.is_open()){
-				enought = true;
+				enough = true;
 				return;
 			}
 			file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
@@ -444,16 +444,23 @@ struct game{
 		return;
 	}
 
-	int search_it(vector<int> cor){
-		for(int i = 0; i < lst.size(); ++i)
-			if(cor[0] == lst[i][0] && cor[1] == lst[i][1])
-				return i + 1;
-		return 0;
+	int search_it(vector<int> c){
+		int l = 0, r = lst.size();
+		while(r - l > 1){
+			int mid = (l + r) / 2;
+			if(lst[mid][0] > c[0] || (lst[mid][0] == c[0] && lst[mid][1] > c[1]))
+				r = mid;
+			else
+				l = mid;
+		}
+		if(lst[l][0] != c[0] || lst[l][1] != c[1])
+			return 0;
+		return l + 1;
 	}
 
 	void gameplay(){
 		gen();
-		if(enought)
+		if(enough)
 			return;
 		int mvs = 0, mvs1 = 0;
 		while(true){
@@ -529,8 +536,6 @@ struct game{
 				else if(mode != "normal" && toupper(mode[0]) != 'M' && rows-- >= 0)
 					add_row();
 				prt_scr(rnd());
-				if(check_end())
-					return;
 				if(mode != "normal" && mvs1 % addr1 == 0)
 					add_row();
 				prt_scr(canon);
@@ -623,8 +628,8 @@ struct game{
 				do{
 					silent = (c == 'n');
 					gameplay();
-				} while(--times && c == 'n' && !enought);
-				enought = false;
+				} while(--times && c == 'n' && !enough);
+				enough = false;
 				tries = 0;
 			}
 			if(checking){
