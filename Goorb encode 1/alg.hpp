@@ -83,7 +83,7 @@ struct game{
 		++tries;
 		_srand(tb, user_serial);
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
-		code.push_back(tb);
+		code.push_back(user_serial), code.push_back(tb);
 		code.push_back(N), code.push_back(maxn), code.push_back(M);
 		code.push_back(same), code.push_back(addr), code.push_back(addr1);
 		code.push_back(bl), code.push_back(blsc);

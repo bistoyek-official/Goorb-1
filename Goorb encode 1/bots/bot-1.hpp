@@ -2,7 +2,7 @@
 
 void init(){
 	K = 1024;
-	botsname = "bot-1";
+	botsname = "bot-2";
 	decode = vector<vector<node>>(K);
 	rescount = vector<int>(K);
 	return;
@@ -28,15 +28,15 @@ char map_list[32];
 void gen_map_list(){
 	map_list[0] = ' ';
 	for(int i = 0; i < 26; ++i)
-		map_list[i + 1] = 'a' + i + 1;
-	map_list[27] = '.', map_list[27] = '+', map_list[27] = '-';
-	map_list[27] = '?', map_list[27] = '\n';
+		map_list[i + 1] = 'a' + i;
+	map_list[27] = '.', map_list[28] = '+', map_list[29] = '-';
+	map_list[30] = '?', map_list[31] = '\n';
 	return;
 }
 
 void game::fill_factors(){
 	factors.clear();
-	maxn = rand() % 50 + 14;
+	maxn = rand() % 50 + 25;
 	N = rand() % 20 + (maxn - 25);
 	M = rand() % 24 + 16;
 	same = rand() % 1024;
@@ -146,8 +146,8 @@ int mp[256];
 vector<node> res[1024];
 
 void _encode_(){
-	ifstream f2("./messages/bot-1/decoded.txt");
-	ofstream fres("./messages/bot-1/encoded.txt");
+	ifstream f2("./messages/" + botsname + "/decoded.txt");
+	ofstream fres("./messages/" + botsname + "/encoded.txt");
 	_srand(time(0) / 2, time(0));
 	mp[(int)' '] = 0;
 	for(int i = 0; i < 26; ++i)
@@ -158,7 +158,7 @@ void _encode_(){
 	mp[(int)'?'] = 30;
 	mp[(int)'\n'] = 31;
 	for(int i = 0; i < 1024; ++i){
-		ifstream fbank("./bank/bot-1/" + to_string(i) + ".txt");
+		ifstream fbank("./bank/" + botsname + "/" + to_string(i) + ".txt");
 		bool b = true;
 		while(b){
 			res[i].push_back({});
