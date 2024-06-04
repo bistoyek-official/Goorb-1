@@ -13,7 +13,7 @@ struct note{
 vector<vector<node>> decode;
 vector<int> rescount;
 
-long long calls = 0;
+long long calls = 0, quality = 0;
 
 void flush_it();
 void bank_info();
@@ -39,7 +39,6 @@ bool add_it(vector<long long> v, int res){
 }
 
 void flush_it(){
-	bank_info();
 	for(int res = 0; res < decode.size(); ++res){
 		ofstream f("./bank/" + botsname + "/" + to_string(res) + ".txt", ios::app);
 		for(int i = 0; i < decode[res].size(); ++i)
@@ -48,6 +47,7 @@ void flush_it(){
 		rescount[res] += decode[res].size();
 		decode[res].clear();
 	}
+	bank_info();
 	return;
 }
 
@@ -55,6 +55,7 @@ void bank_info(){
 	cout << "____________________________________________\n";
 	botsname[0] = 'B';
 	cout << "~ " << botsname + "'s bank log:" << '\n';
+	cout << "Game Quality: " << quality / (per * 1.0) << "\n---------\n";
 	botsname[0] = 'b';
 	time_t t = time(nullptr);
 	cout << ctime(&t) << '\n';

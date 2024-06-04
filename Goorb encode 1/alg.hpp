@@ -291,12 +291,14 @@ struct game{
 		}
 		if(!decode)
 			enough = add_it(factors, res);
+		quality += mvs + mvs1;
 		upd_res(6);
 		return;
 	}
 
 	void play(string dir = "", int times = 21){
 		decode = !dir.empty();
+		quality = 0;
 		if(decode){
 			file.open(dir + "encoded.txt");
 			ofstream f(dir + "decoded.txt");
