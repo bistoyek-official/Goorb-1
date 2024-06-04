@@ -54,7 +54,7 @@ void flush_it(){
 void bank_info(){
 	cout << "____________________________________________\n";
 	botsname[0] = 'B';
-	cout << "* " << botsname + "'s bank log:" << '\n';
+	cout << "~ " << botsname + "'s bank log:" << '\n';
 	botsname[0] = 'b';
 	time_t t = time(nullptr);
 	cout << ctime(&t) << '\n';
