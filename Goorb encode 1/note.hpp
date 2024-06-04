@@ -55,7 +55,7 @@ void bank_info(){
 	cout << "____________________________________________\n";
 	botsname[0] = 'B';
 	cout << "~ " << botsname + "'s bank log:" << '\n';
-	cout << "Game Quality: " << quality / (per * 1.0) << "\n---------\n";
+	cout << "Game's' Quality: " << quality / (calls * 1.0) << "\n---------\n";
 	botsname[0] = 'b';
 	time_t t = time(nullptr);
 	cout << ctime(&t) << '\n';
