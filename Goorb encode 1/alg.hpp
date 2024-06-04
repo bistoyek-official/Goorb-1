@@ -7,7 +7,6 @@ struct game{
 	long long tb, user_serial;
 
 	ifstream file;
-	
 	vector<long long> factors;
 
 	vector<vector<int>> a, lst, ok;

@@ -1,18 +1,5 @@
 #include "selected.hpp"
 
-void _decode_(){
-	int cnt = 0;
-	ifstream f("./messages/" + botsname + "/encoded.txt");
-	string s;
-	while(getline(f, s))
-		++cnt;
-	f.close();
-	gen_map_list();
-	game g;
-	g.play("./messages/" + botsname + "/", cnt);
-	return;
-}
-
 signed main(){
 	init();
 	while(true){

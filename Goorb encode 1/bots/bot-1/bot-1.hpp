@@ -1,5 +1,9 @@
 #include "../../alg.hpp"
 
+int mp[256];
+char map_list[32];
+vector<node> res[1024];
+
 void init(){
 	K = 1024;
 	botsname = "bot-1";
@@ -10,20 +14,14 @@ void init(){
 
 void renew(){
 	#ifdef __unix__
-		system("rm -fr ./bank/bot-2/*");
+		system("rm -fr ./bank/bot-1/*");
 	#elif defined(__MACH__)
-		system("rm -fr ./bank/bot-2/*");
+		system("rm -fr ./bank/bot-1/*");
 	#else
-		system("del /s /q .\\bank\\bot-2\\* > nul");
+		system("del /s /q .\\bank\\bot-1\\* > nul");
 	#endif
 	return;
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-
-//DECODE:
-
-char map_list[32];
 
 void gen_map_list(){
 	map_list[0] = ' ';
@@ -142,14 +140,6 @@ string game::map_it(){
 	return mapped;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-
-//ENCODE:
-
-int mp[256];
-
-vector<node> res[1024];
-
 void _encode_(){
 	ifstream f2("./messages/" + botsname + "/decoded.txt");
 	ofstream fres("./messages/" + botsname + "/encoded.txt");
@@ -200,5 +190,18 @@ void _encode_(){
 			fres << res[num][idx].f[j] << " ";
 		fres << '\n';
 	}
+	return;
+}
+
+void _decode_(){
+	int cnt = 0;
+	ifstream f("./messages/" + botsname + "/encoded.txt");
+	string s;
+	while(getline(f, s))
+		++cnt;
+	f.close();
+	gen_map_list();
+	game g;
+	g.play("./messages/" + botsname + "/", cnt);
 	return;
 }
