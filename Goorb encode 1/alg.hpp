@@ -296,7 +296,7 @@ struct game{
 		return;
 	}
 
-	void play(string dir = "", int times = 21){
+	void play(string dir = "", int times = -1){
 		decode = !dir.empty();
 		quality = 0;
 		if(decode){
@@ -310,8 +310,12 @@ struct game{
 			f.close();
 		}
 		else{
-			while(!enough || (times-- > 0))
-				gameplay();
+			if(times == -1)
+				while(!enough)
+					gameplay();
+			else
+				while(times-- > 0)
+					gameplay();
 			flush_it();
 		}
 		return;

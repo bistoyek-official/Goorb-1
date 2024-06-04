@@ -49,6 +49,8 @@ signed main(){
 			srand(t);
 			system("cls");
 			cout << "starting time: " << ctime(&t) << "--------\n";
+			for(auto &e: rescount)
+				e = 0;
 			g.play();
 			cout << "task 4:\ndone!\npress any key to continue\n";
 			cout << "in: " << time(nullptr) - t << " seconds\n";
