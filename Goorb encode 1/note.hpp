@@ -6,6 +6,10 @@ struct node{
 	long long f[10];
 };
 
+struct note{
+	void note_it(ofstream &f, node &obj);
+} nt;
+
 vector<vector<node>> decode;
 vector<int> rescount;
 
@@ -23,13 +27,10 @@ bool add_it(vector<long long> v, int res){
 	if(sizeof(decode) >= 1024.0 * KB)
 		flush_it();
 	else if(decode[res].size() == buff){
-		ofstream f1("./bank/" + botsname + "/" + to_string(res) + ".txt", ios::app);
-		for(int i = 0; i < decode[res].size(); ++i){
-			for(int j = 0; j < 10; ++j)
-				f1 << decode[res][i].f[j] << " ";
-			f1 << '\n';
-		}
-		f1.close();
+		ofstream f("./bank/" + botsname + "/" + to_string(res) + ".txt", ios::app);
+		for(int i = 0; i < decode[res].size(); ++i)
+			nt.note_it(f, decode[res][i]);
+		f.close();
 		decode[res].clear();
 	}
 	if(!((++calls) % per))
@@ -41,11 +42,8 @@ void flush_it(){
 	bank_info();
 	for(int res = 0; res < decode.size(); ++res){
 		ofstream f("./bank/" + botsname + "/" + to_string(res) + ".txt", ios::app);
-		for(int i = 0; i < decode[res].size(); ++i){
-			for(int j = 0; j < 10; ++j)
-				f << decode[res][i].f[j] << " ";
-			f << '\n';
-		}
+		for(int i = 0; i < decode[res].size(); ++i)
+			nt.note_it(f, decode[res][i]);
 		f.close();
 		rescount[res] += decode[res].size();
 		decode[res].clear();

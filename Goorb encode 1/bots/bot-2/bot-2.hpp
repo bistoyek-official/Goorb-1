@@ -140,6 +140,13 @@ string game::map_it(){
 	return mapped;
 }
 
+void note::note_it(ofstream &f, node &obj){
+	for(int i = 0; i < 10; ++i)
+		f << obj.f[i] << " ";
+	f << '\n';
+	return;
+}
+
 void _encode_(){
 	ifstream f2("./messages/" + botsname + "/decoded.txt");
 	ofstream fres("./messages/" + botsname + "/encoded.txt");

@@ -5,7 +5,7 @@ signed main(){
 	while(true){
 		system("cls");
 		cout << "Goorb encode" << '\n';
-		cout << "Created by 21" << '\n';
+		cout << "Created by: 21" << '\n';
 		time_t t = time(0);
 		cout << "___________________________________\n";
 		cout << ctime(&t);
