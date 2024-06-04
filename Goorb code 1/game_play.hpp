@@ -53,7 +53,10 @@ struct game{
 			}
 			else{
 				for(int k = 0; k < 21; ++k){
-					a[0][i] = rnd();
+					if(!k && i != ini && _rand() % same == 0)
+						a[0][i] = a[0][i - 2];
+					else
+						a[0][i] = rnd();
 					int tmp = pts, tmp1;
 					dfs_blast({0, i});
 					for(int ii = 0; ii < maxn; ++ii)
