@@ -2,7 +2,7 @@
 
 struct game{
 
-	int maxn, N, M, same, addr, addr1, bl, blsc;
+	int maxn, N, M, same, addr, addr1, bl, blsc, rang;
 
 	ifstream file;
 
@@ -18,17 +18,17 @@ struct game{
 	int rnd(){
 		int res = 0, k;
 		if(_rand() % 8 == 0)
-			res = (_rand() % 5 + 1) * 16;
-		k = _rand() % 5 + 1;
-		int cnt = 21;
-		while(k == res / 16 && cnt--){
-			k = _rand() % 5 + 1;
+			res = (_rand() % rang + 1) * (rang + 2);
+		k = _rand() % rang + 1;
+		int cnt = 4;
+		while(k == res / (rang + 2) && cnt--){
+			k = _rand() % rang + 1;
 			if(!cnt)
 				k = 0;
 		}
 		res += k;
-		if(res / 16 > res % 16)
-			return (res % 16) * 16 + res / 16;
+		if(res / (rang + 2) > res % (rang + 2))
+			return (res % (rang + 2)) * (rang + 2) + res / (rang + 2);
 		return res;
 	}
 
@@ -41,7 +41,7 @@ struct game{
 				swap(blast[i][j], blast[i - 1][j]);
 			}
 		for(int i = ini; i < M; i += 2){
-			for(int k = 0; k < 21; ++k){
+			for(int k = 0; k < 3; ++k){
 				if(!k && i != ini && _rand() % same == 0)
 					a[0][i] = a[0][i - 2];
 				else
@@ -55,8 +55,8 @@ struct game{
 				tmp1 = pts, pts = tmp;
 				if(tmp1 - tmp <= bl)
 					break;
-				if(tmp1 - tmp > blsc && k == 20){
-					a[0][i] = 8;
+				if(tmp1 - tmp > blsc && k == 2){
+					a[0][i] = rang + 1;
 					break;
 				}
 				upd_rnd();
@@ -82,7 +82,7 @@ struct game{
 			enought = true;
 			return;
 		}
-		file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+		file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc >> rang;
 		_srand(tb, user_serial);
 		a.clear(), exs.clear(), blast.clear(), lst.clear();
 		for(int i = 0; i < maxn; ++i){
@@ -128,13 +128,13 @@ struct game{
 			return false;
 		if(!exs[c[0]][c[1]])
 			return false;
-		if(a[p[0]][p[1]] % 16 == a[c[0]][c[1]] % 16)
+		if(a[p[0]][p[1]] % (rang + 2) == a[c[0]][c[1]] % (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] / 16 == a[c[0]][c[1]] % 16)
+		if(a[p[0]][p[1]] / (rang + 2) == a[c[0]][c[1]] % (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] % 16 == a[c[0]][c[1]] / 16)
+		if(a[p[0]][p[1]] % (rang + 2)  == a[c[0]][c[1]] / (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] / 16 == a[c[0]][c[1]] / 16 && a[c[0]][c[1]] > 16)
+		if(a[p[0]][p[1]] / (rang + 2) == a[c[0]][c[1]] / (rang + 2) && a[c[0]][c[1]] > (rang + 2))
 			return true;
 		return false;
 	}
@@ -233,7 +233,7 @@ struct game{
 		for(int i = 0; i < maxn; ++i)
 			for(int j = 0; j < M; ++j)
 				num = ((num * bs) % mod + a[i][j]) % mod;
-		num %= 100;
+		num %= 21;
 		while(num-- >= 0)
 			if(_rand() & 1)
 				_rand();
@@ -277,7 +277,7 @@ struct game{
 			if(!check_good({x, y})){
 				++mvs1;
 				upd_sit(rnd());
-				if(mvs1 % addr1 == 0)
+				if(_rand() <= addr1)
 					add_row();
 				if(check_end())
 					return;
@@ -288,7 +288,7 @@ struct game{
 			fall();
 			upd_sit(canon);
 			upd_rnd();
-			if(mvs % addr == 0)
+			if(_rand() <= addr)
 				add_row();
 			canon = rnd();
 		}

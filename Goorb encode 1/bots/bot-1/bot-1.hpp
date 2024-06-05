@@ -33,34 +33,35 @@ void gen_map_list(){
 }
 
 void game::set_factors(){
-	file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+	file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc >> rang;
 	return;
 }
 
 void game::fill_factors(){
 	factors.clear();
-	maxn = rand() % 50 + 25;
-	N = rand() % 20 + (maxn - 25);
+	maxn = rand() % 100 + 28;
+	N = min(rand() % 30 + 8, maxn - 20);
 	M = rand() % 24 + 16;
-	same = rand() % 1024;
-	addr1 = rand() % 2 + 1;
-	addr = rand() % 2 + 1;
-	bl = M / 5 + rand() % (M / 2);
+	same = rand() % 10 + 6;
+	addr1 = 512;
+	addr = 512;
+	bl = M * 3 / 5 + rand() % (M / 5);
 	blsc = rand() % (M / 10) + bl;
-	tb = (1LL << 60) + ((1LL * (rand() % 1024)) << 50) + ((1LL * (rand() % 1024)) << 40);
-	tb += ((1LL * (rand() % 1024)) << 30) + ((1LL * (rand() % 1024)) << 20) + ((1LL * (rand() % 1024)) << 10) + (1LL * (rand() % 1024));
-	user_serial = (1LL << 60) + ((1LL * (rand() % 1024)) << 50) + ((1LL * (rand() % 1024)) << 40);
+	tb = time(nullptr) * 100LL + tries;
+	user_serial = ((1LL * (rand() % 1024)) << 50) + ((1LL * (rand() % 1024)) << 40);
 	user_serial += ((1LL * (rand() % 1024)) << 30) + ((1LL * (rand() % 1024)) << 20) + ((1LL * (rand() % 1024)) << 10) + (1LL * (rand() % 1024));
-	factors.push_back(user_serial);
-	factors.push_back(tb);
-	factors.push_back(N);
-	factors.push_back(maxn);
-	factors.push_back(M);
-	factors.push_back(same);
-	factors.push_back(addr);
-	factors.push_back(addr1);
-	factors.push_back(bl);
-	factors.push_back(blsc);
+	rang = 5 + rand() % 2;
+	factors[0] = user_serial;
+	factors[1] = tb;
+	factors[2] = N;
+	factors[3] = maxn;
+	factors[4] = M;
+	factors[5] = same;
+	factors[6] = addr;
+	factors[7] = addr1;
+	factors[8] = bl;
+	factors[9] = blsc;
+	factors[10] = rang;
 	return;
 }
 
@@ -104,21 +105,21 @@ int game::cmp(int i, int sen){
 }
 
 vector<int> game::bot(){
-	if(810 <= code.size())
+	if(100 == mvs + mvs1)
 		return {};
 	int mn1 = 1000000021, mn2 = 1000000021;
 	int x = lst[0][0], y = lst[0][1];
 	for(int i = 0; i < lst.size(); ++i){
 		int balls = cmp(i, 1);
-		int rws = cmp(i, 2);
-		if(rws == 1000000020 && mn1 == 1000000020)
+		if(mn1 > balls){
+			mn1 = balls, mn2 = cmp(i, 2), x = lst[i][0], y = lst[i][1];
 			continue;
-		if(mn1 > balls)
-			mn1 = balls, mn2 = rws, x = lst[i][0], y = lst[i][1];
-		else if(mn1 == balls && mn2 > rws)
-			mn1 = rws, x = lst[i][0], y = lst[i][1];
-		else if(mn1 == balls && mn2 == rws)
-			mn1 = rws, x = lst[i][0], y = lst[i][1];
+		}
+		if(mn1 == balls){
+			int rws = cmp(i, 2);
+			if(mn2 > rws)
+				mn2 = rws, x = lst[i][0], y = lst[i][1];
+		}
 	}
 	return {x, y};
 }
@@ -141,7 +142,7 @@ string game::map_it(){
 }
 
 void note::note_it(ofstream &f, node &obj){
-	for(int i = 0; i < 10; ++i)
+	for(int i = 0; i < 11; ++i)
 		f << obj.f[i] << " ";
 	f << '\n';
 	return;

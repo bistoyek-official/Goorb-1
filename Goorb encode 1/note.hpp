@@ -3,7 +3,7 @@
 int constexpr buff = 1, KB = 100, per = 100;
 
 struct node{
-	long long f[10];
+	long long f[11];
 };
 
 struct note{

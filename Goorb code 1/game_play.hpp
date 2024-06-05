@@ -2,7 +2,7 @@
 
 struct game{
 
-	int maxn, N, M, same, addr, addr1, tries = 0, bot;
+	int maxn, N, M, same, addr, addr1, tries = 0, bot, rang;
 	bool silent;
 
 	ifstream file;
@@ -22,17 +22,17 @@ struct game{
 	int rnd(){
 		int res = 0, k;
 		if(_rand() % 8 == 0)
-			res = (_rand() % 5 + 1) * 16;
-		k = _rand() % 5 + 1;
-		int cnt = 21;
-		while(k == res / 16 && cnt--){
-			k = _rand() % 5 + 1;
+			res = (_rand() % rang + 1) * (rang + 2);
+		k = _rand() % rang + 1;
+		int cnt = 4;
+		while(k == res / (rang + 2) && cnt--){
+			k = _rand() % rang + 1;
 			if(!cnt)
 				k = 0;
 		}
 		res += k;
-		if(res / 16 > res % 16)
-			return (res % 16) * 16 + res / 16;
+		if(res / (rang + 2) > res % (rang + 2))
+			return (res % (rang + 2)) * (rang + 2) + res / (rang + 2);
 		return res;
 	}
 
@@ -52,7 +52,7 @@ struct game{
 					a[0][i] = rnd();
 			}
 			else{
-				for(int k = 0; k < 21; ++k){
+				for(int k = 0; k < 3; ++k){
 					if(!k && i != ini && _rand() % same == 0)
 						a[0][i] = a[0][i - 2];
 					else
@@ -66,8 +66,8 @@ struct game{
 					tmp1 = pts, pts = tmp;
 					if(tmp1 - tmp <= bl)
 						break;
-					if(tmp1 - tmp > blsc && k == 20){
-						a[0][i] = 8;
+					if(tmp1 - tmp > blsc && k == 2){
+						a[0][i] = rang + 1;
 						break;
 					}
 					upd_rnd();
@@ -103,22 +103,24 @@ struct game{
 			if(!frombot)
 				silent = false;
 			N = 5, maxn = 31, M = 16, same = 512;
-			addr = 4, addr1 = 4;
-			bl = 10, blsc = 14;
+			addr = 512, addr1 = 1024;
+			bl = 14, blsc = 16;
+			rang = 5;
 			_srand(tb, user_serial);
 		}
 		else{
 			cout << "\n~ enter file dir: ";
 			string s;
 			getline(cin, s);
-			if(tries > 1)
+			getline(cin, s);
+			if(file.is_open())
 				file.close();
 			file.open(s);
 			if(!file.is_open()){
 				enough = true;
 				return;
 			}
-			file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+			file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc >> rang;
 			_srand(tb, user_serial);
 		}
 		rows = 10;
@@ -126,7 +128,7 @@ struct game{
 		code.push_back(to_string(user_serial)), code.push_back(to_string(tb));
 		code.push_back(to_string(N)), code.push_back(to_string(maxn)), code.push_back(to_string(M));
 		code.push_back(to_string(same)), code.push_back(to_string(addr)), code.push_back(to_string(addr1));
-		code.push_back(to_string(bl)), code.push_back(to_string(blsc));
+		code.push_back(to_string(bl)), code.push_back(to_string(blsc)), code.push_back(to_string(rang));
 		for(int i = 0; i < maxn; ++i){
 			a.push_back({}), exs.push_back({}), blast.push_back({});
 			for(int j = 0; j < M; ++j)
@@ -146,9 +148,7 @@ struct game{
 			if(frombot)
 				cout << "Tries: " << tries << ", Bot: " << bot <<'\n';
 			cout << "------------------------\n";
-			mode[0] = toupper(mode[0]);
 			cout << "Mode: " << mode << '\n';
-			mode[0] += 32;
 			c_col(6);
 			cout << "Score: " << pts << "\n\n";
 			c_col(9);
@@ -172,7 +172,7 @@ struct game{
 				}
 				if(exs[i][j]){
 					if(!silent){
-						c_col(a[i][j]);
+						c_col((a[i][j] / (rang + 2)) * 16 + (a[i][j] % (rang + 2)));
 						cout << (char)('A' + j);
 						c_col(15);
 					}
@@ -225,7 +225,7 @@ struct game{
 		}
 		canon = color;
 		if(!silent){
-			c_col(canon);
+			c_col((canon / (rang + 2)) * 16 + (canon % (rang + 2)));
 			cout << '0';
 			c_col(15);
 			cout << ")";
@@ -296,13 +296,13 @@ struct game{
 			return false;
 		if(!exs[c[0]][c[1]])
 			return false;
-		if(a[p[0]][p[1]] % 16 == a[c[0]][c[1]] % 16)
+		if(a[p[0]][p[1]] % (rang + 2) == a[c[0]][c[1]] % (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] / 16 == a[c[0]][c[1]] % 16)
+		if(a[p[0]][p[1]] / (rang + 2) == a[c[0]][c[1]] % (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] % 16 == a[c[0]][c[1]] / 16)
+		if(a[p[0]][p[1]] % (rang + 2)  == a[c[0]][c[1]] / (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] / 16 == a[c[0]][c[1]] / 16 && a[c[0]][c[1]] > 16)
+		if(a[p[0]][p[1]] / (rang + 2) == a[c[0]][c[1]] / (rang + 2) && a[c[0]][c[1]] > (rang + 2))
 			return true;
 		return false;
 	}
@@ -440,7 +440,7 @@ struct game{
 		for(int i = 0; i < maxn; ++i)
 			for(int j = 0; j < M; ++j)
 				num = ((num * bs) % mod + a[i][j]) % mod;
-		num %= 100;
+		num %= 21;
 		while(num-- >= 0)
 			if(_rand() & 1)
 				_rand();
@@ -476,17 +476,19 @@ struct game{
 				x = lst[0][0], y = lst[0][1];
 				for(int i = 0; i < lst.size(); ++i){
 					int balls = willfall(i);
-					bot = 3 - bot;
-					int rws = willfall(i);
-					bot = 3 - bot;
-					if(rws == 1000000020 && mn1 == 1000000020)
+					if(mn1 > balls){
+						bot = 3 - bot;
+						mn1 = balls, mn2 = willfall(i), x = lst[i][0], y = lst[i][1];
+						bot = 3 - bot;
 						continue;
-					if(mn1 > balls)
-						mn1 = balls, mn2 = rws, x = lst[i][0], y = lst[i][1];
-					else if(mn1 == balls && mn2 > rws)
-						mn1 = rws, x = lst[i][0], y = lst[i][1];
-					else if(mn1 == balls && mn2 == rws)
-						mn1 = rws, x = lst[i][0], y = lst[i][1];
+					}
+					if(mn1 == balls){
+						bot = 3 - bot;
+						int rws = willfall(i);
+						bot = 3 - bot;
+						if(mn2 > rws)
+							mn2 = rws, x = lst[i][0], y = lst[i][1];
+					}
 				}
 				int s_it = search_it({x, y});
 				while(s_it--)
@@ -502,7 +504,7 @@ struct game{
 							cin >> x >> y;
 					}
 					else
-						file >> s;
+						file >> x >> y;
 					if(toupper(mode[0]) != 'M'){
 						if(s == "q"){
 							cout << "\n======GAME OVER=====\n";
@@ -539,7 +541,7 @@ struct game{
 				else if(mode != "normal" && toupper(mode[0]) != 'M' && rows-- >= 0)
 					add_row();
 				prt_scr(rnd());
-				if(mode != "normal" && mvs1 % addr1 == 0)
+				if(mode != "normal" && _rand() <= addr1)
 					add_row();
 				prt_scr(canon);
 				if(check_end())
@@ -555,7 +557,7 @@ struct game{
 				Beep(414, 300);
 			if(mode == "normal" && mvs % 2 == 0 && rows-- >= 0)
 				add_row();
-			else if(mode != "normal" && mvs % addr == 0)
+			else if(mode != "normal" && _rand() <= addr)
 				add_row();
 			prt_scr(rnd());
 		}
@@ -619,8 +621,10 @@ struct game{
 					cout << "Do you want to watch the game? (y/n)" << '\n';
 					c = getch();
 				}
-				cout << "enter your serial code: ";
-				cin >> user_serial;
+				if(!checking){
+					cout << "enter your serial code: ";
+					cin >> user_serial;
+				}
 				int times = 1021;
 				if((frombot && c == 'n') || checking){
 					cout << "How many tries do you want to do? (enter the number)" << '\n';

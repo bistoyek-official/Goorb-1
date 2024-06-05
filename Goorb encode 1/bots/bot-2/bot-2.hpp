@@ -39,17 +39,16 @@ void game::set_factors(){
 
 void game::fill_factors(){
 	factors.clear();
-	maxn = rand() % 50 + 25;
-	N = rand() % 20 + (maxn - 25);
+	maxn = rand() % 100 + 28;
+	N = min(rand() % 30 + 8, maxn - 20);
 	M = rand() % 24 + 16;
-	same = rand() % 1024;
-	addr1 = rand() % 2 + 1;
-	addr = rand() % 2 + 1;
-	bl = M / 5 + rand() % (M / 2);
+	same = rand() % 10 + 6;
+	addr1 = 512;
+	addr = 512;
+	bl = M * 3 / 5 + rand() % (M / 5);
 	blsc = rand() % (M / 10) + bl;
-	tb = (1LL << 60) + ((1LL * (rand() % 1024)) << 50) + ((1LL * (rand() % 1024)) << 40);
-	tb += ((1LL * (rand() % 1024)) << 30) + ((1LL * (rand() % 1024)) << 20) + ((1LL * (rand() % 1024)) << 10) + (1LL * (rand() % 1024));
-	user_serial = (1LL << 60) + ((1LL * (rand() % 1024)) << 50) + ((1LL * (rand() % 1024)) << 40);
+	tb = time(nullptr) * 100LL + tries;
+	user_serial = ((1LL * (rand() % 1024)) << 50) + ((1LL * (rand() % 1024)) << 40);
 	user_serial += ((1LL * (rand() % 1024)) << 30) + ((1LL * (rand() % 1024)) << 20) + ((1LL * (rand() % 1024)) << 10) + (1LL * (rand() % 1024));
 	factors.push_back(user_serial);
 	factors.push_back(tb);
@@ -104,21 +103,21 @@ int game::cmp(int i, int sen){
 }
 
 vector<int> game::bot(){
-	if(810 <= code.size())
+	if(100 == mvs + mvs1)
 		return {};
 	int mn1 = 1000000021, mn2 = 1000000021;
 	int x = lst[0][0], y = lst[0][1];
 	for(int i = 0; i < lst.size(); ++i){
 		int balls = cmp(i, 2);
-		int rws = cmp(i, 1);
-		if(rws == 1000000020 && mn1 == 1000000020)
+		if(mn1 > balls){
+			mn1 = balls, mn2 = cmp(i, 1), x = lst[i][0], y = lst[i][1];
 			continue;
-		if(mn1 > balls)
-			mn1 = balls, mn2 = rws, x = lst[i][0], y = lst[i][1];
-		else if(mn1 == balls && mn2 > rws)
-			mn1 = rws, x = lst[i][0], y = lst[i][1];
-		else if(mn1 == balls && mn2 == rws)
-			mn1 = rws, x = lst[i][0], y = lst[i][1];
+		}
+		if(mn1 == balls){
+			int rws = cmp(i, 1);
+			if(mn2 > rws)
+				mn2 = rws, x = lst[i][0], y = lst[i][1];
+		}
 	}
 	return {x, y};
 }
@@ -175,7 +174,7 @@ void _encode_(){
 		}
 		fbank.close();
 	}
-	bitset<8 * 1024 * 100> b_set;
+	bitset<1024 * 8 * 100> b_set;
 	int cnt = 0;
 	string s;
 	while(getline(f2, s)){

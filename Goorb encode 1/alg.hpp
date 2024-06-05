@@ -2,12 +2,12 @@
 
 struct game{
 
-	int maxn, N, M, same, addr, addr1, bl, blsc, res;
+	int maxn, N, M, same, addr, addr1, bl, blsc, res, rang;
 	
 	long long tb, user_serial;
 
 	ifstream file;
-	vector<long long> factors;
+	node factors;
 
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
@@ -28,17 +28,17 @@ struct game{
 	int rnd(){
 		int res = 0, k;
 		if(_rand() % 8 == 0)
-			res = (_rand() % 5 + 1) * 16;
-		k = _rand() % 5 + 1;
-		int cnt = 21;
-		while(k == res / 16 && cnt--){
-			k = _rand() % 5 + 1;
+			res = (_rand() % rang + 1) * (rang + 2);
+		k = _rand() % rang + 1;
+		int cnt = 4;
+		while(k == res / (rang + 2) && cnt--){
+			k = _rand() % rang + 1;
 			if(!cnt)
 				k = 0;
 		}
 		res += k;
-		if(res / 16 > res % 16)
-			return (res % 16) * 16 + res / 16;
+		if(res / (rang + 2) > res % (rang + 2))
+			return (res % (rang + 2)) * (rang + 2) + res / (rang + 2);
 		return res;
 	}
 
@@ -51,7 +51,7 @@ struct game{
 				swap(blast[i][j], blast[i - 1][j]);
 			}
 		for(int i = ini; i < M; i += 2){
-			for(int k = 0; k < 21; ++k){
+			for(int k = 0; k < 3; ++k){
 				if(!k && i != ini && _rand() % same == 0)
 					a[0][i] = a[0][i - 2];
 				else
@@ -65,8 +65,8 @@ struct game{
 				tmp1 = pts, pts = tmp;
 				if(tmp1 - tmp <= bl)
 					break;
-				if(tmp1 - tmp > blsc && k == 20){
-					a[0][i] = 8;
+				if(tmp1 - tmp > blsc && k == 2){
+					a[0][i] = rang + 1;
 					break;
 				}
 				upd_rnd();
@@ -78,18 +78,18 @@ struct game{
 	}
 
 	void gen(){
+		++tries;
 		if(decode)
 			set_factors();
 		else
 			fill_factors();
 		mvs = mvs1 = res = ini = pts = 0;
-		++tries;
 		_srand(tb, user_serial);
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
 		code.push_back(user_serial), code.push_back(tb);
 		code.push_back(N), code.push_back(maxn), code.push_back(M);
 		code.push_back(same), code.push_back(addr), code.push_back(addr1);
-		code.push_back(bl), code.push_back(blsc);
+		code.push_back(bl), code.push_back(blsc), code.push_back(rang);
 		for(int i = 0; i < maxn; ++i){
 			a.push_back({}), exs.push_back({}), blast.push_back({});
 			for(int j = 0; j < M; ++j)
@@ -127,13 +127,13 @@ struct game{
 			return false;
 		if(!exs[c[0]][c[1]])
 			return false;
-		if(a[p[0]][p[1]] % 16 == a[c[0]][c[1]] % 16)
+		if(a[p[0]][p[1]] % (rang + 2) == a[c[0]][c[1]] % (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] / 16 == a[c[0]][c[1]] % 16)
+		if(a[p[0]][p[1]] / (rang + 2) == a[c[0]][c[1]] % (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] % 16 == a[c[0]][c[1]] / 16)
+		if(a[p[0]][p[1]] % (rang + 2)  == a[c[0]][c[1]] / (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] / 16 == a[c[0]][c[1]] / 16 && a[c[0]][c[1]] > 16)
+		if(a[p[0]][p[1]] / (rang + 2) == a[c[0]][c[1]] / (rang + 2) && a[c[0]][c[1]] > (rang + 2))
 			return true;
 		return false;
 	}
@@ -232,7 +232,7 @@ struct game{
 		for(int i = 0; i < maxn; ++i)
 			for(int j = 0; j < M; ++j)
 				num = ((num * bs) % mod + a[i][j]) % mod;
-		num %= 100;
+		num %= 21;
 		while(num-- >= 0)
 			if(_rand() & 1)
 				_rand();
@@ -276,7 +276,7 @@ struct game{
 				++mvs1;
 				upd_sit(rnd());
 				upd_res(4);
-				if(mvs1 % addr1 == 0)
+				if(_rand() <= addr1)
 					add_row();
 				if(check_end())
 					break;
@@ -287,7 +287,7 @@ struct game{
 			fall();
 			upd_sit(canon);
 			upd_rnd();
-			if(mvs % addr == 0)
+			if(_rand() <= addr)
 				add_row();
 			canon = rnd();
 			upd_res(5);
@@ -301,7 +301,6 @@ struct game{
 
 	void play(string dir = "", int times = -1){
 		decode = !dir.empty();
-		quality = 0;
 		if(decode){
 			file.open(dir + "encoded.txt");
 			ofstream f(dir + "decoded.txt");

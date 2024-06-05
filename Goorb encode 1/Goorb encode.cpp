@@ -2,8 +2,9 @@
 
 signed main(){
 	init();
+	game g;
 	while(true){
-		system("cls");
+		cls();
 		cout << "Goorb encode" << '\n';
 		cout << "Created by: 21" << '\n';
 		time_t t = time(0);
@@ -21,33 +22,35 @@ signed main(){
 		if(s == "1"){
 			_decode_();
 			cout << "task 1:\ndone!\npress any key to continue\n";
+			time_t t = time(nullptr);
+			cout << "in: " << time(nullptr) - t << " seconds\n";
 			getch();
 		}
 		if(s == "2"){
 			_encode_();
 			cout << "task 2:\ndone!\npress any key to continue\n";
+			time_t t = time(nullptr);
+			cout << "in: " << time(nullptr) - t << " seconds\n";
 			getch();
 		}
 		if(s == "3"){
-			game g;
 			int times;
 			cout << "How many times? ";
 			cin >> times;
 			time_t t = time(nullptr);
 			srand(t);
-			system("cls");
-			cout << "starting time: " << ctime(&t) << "--------\n";
+			cls();
+			cout << "starting time: " << ctime(&t) << "tries: " << times << "\n--------\n";
 			g.play("", times);
 			cout << "task 3:\ndone!\npress any key to continue\n";
 			cout << "in: " << time(nullptr) - t << " seconds\n";
 			getch();
 		}
 		if(s == "4"){
-			game g;
 			renew();
 			time_t t = time(nullptr);
 			srand(t);
-			system("cls");
+			cls();
 			cout << "starting time: " << ctime(&t) << "--------\n";
 			for(auto &e: rescount)
 				e = 0;
