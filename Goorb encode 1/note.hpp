@@ -18,11 +18,8 @@ long long calls = 0, quality = 0;
 void flush_it();
 void bank_info();
 
-bool add_it(vector<long long> v, int res){
+bool add_it(node &obj, int res){
 	++rescount[res];
-	node obj;
-	for(int i = 0; i < 10; ++i)
-		obj.f[i] = v[i];
 	decode[res].push_back(obj);
 	if(sizeof(decode) >= 1024.0 * KB)
 		flush_it();

@@ -38,7 +38,6 @@ void game::set_factors(){
 }
 
 void game::fill_factors(){
-	factors.clear();
 	maxn = rand() % 100 + 28;
 	N = min(rand() % 30 + 8, maxn - 20);
 	M = rand() % 24 + 16;
@@ -51,17 +50,17 @@ void game::fill_factors(){
 	user_serial = ((1LL * (rand() % 1024)) << 50) + ((1LL * (rand() % 1024)) << 40);
 	user_serial += ((1LL * (rand() % 1024)) << 30) + ((1LL * (rand() % 1024)) << 20) + ((1LL * (rand() % 1024)) << 10) + (1LL * (rand() % 1024));
 	rang = 5 + rand() % 2;
-	factors[0] = user_serial;
-	factors[1] = tb;
-	factors[2] = N;
-	factors[3] = maxn;
-	factors[4] = M;
-	factors[5] = same;
-	factors[6] = addr;
-	factors[7] = addr1;
-	factors[8] = bl;
-	factors[9] = blsc;
-	factors[10] = rang;
+	factors.f[0] = user_serial;
+	factors.f[1] = tb;
+	factors.f[2] = N;
+	factors.f[3] = maxn;
+	factors.f[4] = M;
+	factors.f[5] = same;
+	factors.f[6] = addr;
+	factors.f[7] = addr1;
+	factors.f[8] = bl;
+	factors.f[9] = blsc;
+	factors.f[10] = rang;
 	return;
 }
 
