@@ -111,7 +111,8 @@ struct game{
 		else{
 			cout << "\n~ enter file dir: ";
 			string s;
-			getline(cin, s);
+			if(tries == 1)
+				getline(cin, s);
 			getline(cin, s);
 			if(file.is_open())
 				file.close();
