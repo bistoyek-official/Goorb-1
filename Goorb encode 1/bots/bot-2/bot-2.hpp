@@ -33,7 +33,7 @@ void gen_map_list(){
 }
 
 void game::set_factors(){
-	file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc;
+	file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc >> rang;
 	return;
 }
 
@@ -50,16 +50,18 @@ void game::fill_factors(){
 	tb = time(nullptr) * 100LL + tries;
 	user_serial = ((1LL * (rand() % 1024)) << 50) + ((1LL * (rand() % 1024)) << 40);
 	user_serial += ((1LL * (rand() % 1024)) << 30) + ((1LL * (rand() % 1024)) << 20) + ((1LL * (rand() % 1024)) << 10) + (1LL * (rand() % 1024));
-	factors.push_back(user_serial);
-	factors.push_back(tb);
-	factors.push_back(N);
-	factors.push_back(maxn);
-	factors.push_back(M);
-	factors.push_back(same);
-	factors.push_back(addr);
-	factors.push_back(addr1);
-	factors.push_back(bl);
-	factors.push_back(blsc);
+	rang = 5 + rand() % 2;
+	factors[0] = user_serial;
+	factors[1] = tb;
+	factors[2] = N;
+	factors[3] = maxn;
+	factors[4] = M;
+	factors[5] = same;
+	factors[6] = addr;
+	factors[7] = addr1;
+	factors[8] = bl;
+	factors[9] = blsc;
+	factors[10] = rang;
 	return;
 }
 
@@ -140,7 +142,7 @@ string game::map_it(){
 }
 
 void note::note_it(ofstream &f, node &obj){
-	for(int i = 0; i < 10; ++i)
+	for(int i = 0; i < 11; ++i)
 		f << obj.f[i] << " ";
 	f << '\n';
 	return;
