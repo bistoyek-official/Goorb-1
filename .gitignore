@@ -12,7 +12,6 @@
 !'Goorb code 1/rankingnormal.txt'
 !'Goorb code 1/ranking.txt'
 
-'Goorb encode 1/bank/*'
-'Goorb encode 1/bots/*'
-'Goorb encode 1/messages/*'
-/Goorb encode 1/bots
+/Goorb encode 1/messages/*
+/Goorb encode 1/bots/*
+/Goorb encode 1/bank/*
