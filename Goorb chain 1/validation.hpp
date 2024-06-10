@@ -11,7 +11,7 @@ struct game{
 	long long tbr, tb;
 	bool enought = false;
 
-	int pts = 0, tries = 0, canon, ini;
+	int pts = 0, tries = 0, sum, moves, canon, ini;
 
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
 
@@ -62,7 +62,6 @@ struct game{
 				upd_rnd();
 			}
 			exs[0][i] = true;
-			blast[0][i] = false;
 		}
 		return;
 	}
@@ -71,6 +70,7 @@ struct game{
 		cout << "\n~ enter file dir: ";
 		string s;
 		getline(cin, s);
+		sum = 0;
 		ini = pts = 0;
 		tbr = time(nullptr);
 		++tries;
@@ -225,6 +225,7 @@ struct game{
 									break;
 								}
 		ok.clear();
+		sum += lst.size();
 		return;
 	}
 
@@ -258,11 +259,13 @@ struct game{
 		gen();
 		if(enought)
 			return;
+		moves = 0;
 		int mvs = 0, mvs1 = 0;
 		while(true){
 			if(check_end())
 				return;
 			updlst();
+			++moves;
 			int x, y;
 			file >> x >> y;
 			int s_it = search_it({x, y});
@@ -273,7 +276,7 @@ struct game{
 				cout << "INVALID" << '\n';
 				return;
 			}
-			a[x][y] = canon, blast[x][y] = false, exs[x][y] = true;
+			a[x][y] = canon, exs[x][y] = true;
 			if(!check_good({x, y})){
 				++mvs1;
 				upd_sit(rnd());
@@ -304,6 +307,7 @@ struct game{
 
 	void update(){
 		cout << "ACCEPTED!\n";
+		cout << "strength: " << sum % moves << '\n';
 		return;
 	}
-};
+} g;

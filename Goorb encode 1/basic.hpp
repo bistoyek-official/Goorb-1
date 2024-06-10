@@ -9,7 +9,6 @@
 using namespace std;
 
 string botsname;
-int K;
 
 void cls(){
 	#ifdef __unix__

@@ -2,7 +2,7 @@
 
 signed main(){
 	init();
-	game g;
+	make_p();
 	while(true){
 		cls();
 		cout << "Goorb encode" << '\n';
@@ -40,8 +40,9 @@ signed main(){
 			time_t t = time(nullptr);
 			srand(t);
 			cls();
+			calls = quality = 0;
 			cout << "starting time: " << ctime(&t) << "tries: " << times << "\n--------\n";
-			g.play("", times);
+			g.play("", max(times, 21));
 			cout << "task 3:\ndone!\npress any key to continue\n";
 			cout << "in: " << time(nullptr) - t << " seconds\n";
 			getch();
@@ -51,6 +52,7 @@ signed main(){
 			time_t t = time(nullptr);
 			srand(t);
 			cls();
+			calls = quality = 0;
 			cout << "starting time: " << ctime(&t) << "--------\n";
 			for(auto &e: rescount)
 				e = 0;

@@ -2,7 +2,7 @@
 
 struct game{
 
-	int maxn, N, M, same, addr, addr1, tries = 0, bot, rang;
+	int maxn, N, M, same, addr, addr1, tries = 0, bot, rang, sum;
 	bool silent;
 
 	ifstream file;
@@ -12,10 +12,12 @@ struct game{
 	string modes[3] = {"timer", "infinite", "normal"}, mode;
 	long long tbr, tb, user_serial;
 	bool checking = false, checkmanual = false, enough = false;
-	vector<string> code;
+	vector<long long> code;
 
 	int pts = 0, canon, ini, tl = 120, rows, X, Y, bl, blsc;
 	bool frombot;
+	
+	vector<int> strng;
 
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
 
@@ -74,7 +76,6 @@ struct game{
 				}
 			}
 			exs[0][i] = true;
-			blast[0][i] = false;
 		}
 		return;
 	}
@@ -91,6 +92,7 @@ struct game{
 	}
 
 	void gen(){
+		sum = 0;
 		ini = pts = 0;
 		tb = time(nullptr) + tries;
 		tbr = time(nullptr);
@@ -102,9 +104,9 @@ struct game{
 		if(!checking){
 			if(!frombot)
 				silent = false;
-			N = 5, maxn = 31, M = 16, same = 512;
-			addr = 512, addr1 = 1024;
-			bl = 14, blsc = 16;
+			N = 5, maxn = 31, M = 17, same = 512;
+			addr = 511, addr1 = 1023;
+			bl = 10, blsc = 14;
 			rang = 5;
 			_srand(tb, user_serial);
 		}
@@ -126,10 +128,10 @@ struct game{
 		}
 		rows = 10;
 		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
-		code.push_back(to_string(user_serial)), code.push_back(to_string(tb));
-		code.push_back(to_string(N)), code.push_back(to_string(maxn)), code.push_back(to_string(M));
-		code.push_back(to_string(same)), code.push_back(to_string(addr)), code.push_back(to_string(addr1));
-		code.push_back(to_string(bl)), code.push_back(to_string(blsc)), code.push_back(to_string(rang));
+		code.push_back(user_serial), code.push_back(tb);
+		code.push_back(N), code.push_back(maxn), code.push_back(M);
+		code.push_back(same), code.push_back(addr), code.push_back(addr1);
+		code.push_back(bl), code.push_back(blsc), code.push_back(rang);
 		for(int i = 0; i < maxn; ++i){
 			a.push_back({}), exs.push_back({}), blast.push_back({});
 			for(int j = 0; j < M; ++j)
@@ -259,6 +261,7 @@ struct game{
 				report += " ";
 			report += "|";
 			cout << report << ":: " << jomle << '\n';
+			cout << sum / max(1.0, (code.size() - 11) / 2.0) + 1 << '\n';
 			return true;
 		}
 		if(mode == "timer" && time(0) - tbr > tl){
@@ -268,6 +271,7 @@ struct game{
 				report += " ";
 			report += "|";
 			cout << report << ":: " << jomle << '\n';
+			cout << sum / max(1.0, (code.size() - 11) / 2.0) + 1 << '\n';
 			return true;
 		}
 		if(!not_null(0)){
@@ -284,6 +288,8 @@ struct game{
 					report += " ";
 				report += "|";
 				cout << report << ":: " << jomle << '\n';
+				cout << "strength: " << sum % ((code.size() - 11) / 2) << '\n';
+				cout << sum / max(1.0, (code.size() - 11) / 2.0) + 1 << '\n';
 				c_col(15);
 			}
 			update();
@@ -354,43 +360,44 @@ struct game{
 		return;
 	}
 
-	int willfall(int i){
-		auto a1 = a;
-		auto exs1 = exs;
-		auto blast1 = blast;
+	vector<int> cmp(int i){
 		int x = lst[i][0], y = lst[i][1];
-		a[x][y] = canon, blast[x][y] = false, exs[x][y] = true;
+		vector<int> ans = {0, 0};
 		if(!check_good({x, y})){
-			if(bot == 1){
-				a = a1, exs = exs1, blast = blast1;
-				return 1000000020;
-			}
+			a[x][y] = canon, exs[x][y] = true;
+			ans[0] = 1000000020;
+			ans[1] = -1;
+			for(int i = maxn - 1; ~i; --i)
+				if(not_null(i)){
+					ans[1] = i;
+					break;
+				}
+			a[x][y] = 0, exs[x][y] = false;
+			ans[1] = (ans[1] == maxn - 1 ? 1000000020 : ans[1]);
 		}
 		else{
+			auto a1 = a;
+			auto exs1 = exs;
+			auto blast1 = blast;
+			a[x][y] = canon, exs[x][y] = true;
 			int tmp = pts;
 			dfs_blast({x, y});
 			pts = tmp;
 			fall();
-		}
-		if(bot == 1){
-			int cnt = 0;
+			ans[0] = 0;
 			for(int i = 0; i < maxn; ++i)
 				for(int j = (ini + i) % 2; j < M; j += 2)
-					cnt += (int)exs[i][j];
-			a = a1, exs = exs1, blast = blast1;
-			return cnt;
-		}
-		else if(bot == 2){
-			int ans = -1;
+					ans[0] += (int)exs[i][j];
+			ans[1] = -1;
 			for(int i = maxn - 1; ~i; --i)
 				if(not_null(i)){
-					ans = i;
+					ans[1] = i;
 					break;
 				}
+			ans[1] = (ans[1] == maxn - 1 ? 1000000020 : ans[1]);
 			a = a1, exs = exs1, blast = blast1;
-			return (ans == maxn - 1 ? 1000000020 : ans);
 		}
-		return -1;
+		return ans;
 	}
 
 	void dfs_ok(vector<int> c){
@@ -433,6 +440,7 @@ struct game{
 									break;
 								}
 		ok.clear();
+		sum += lst.size();
 		return;
 	}
 
@@ -476,20 +484,13 @@ struct game{
 				int mn1 = 1000000021, mn2 = 1000000021;
 				x = lst[0][0], y = lst[0][1];
 				for(int i = 0; i < lst.size(); ++i){
-					int balls = willfall(i);
-					if(mn1 > balls){
-						bot = 3 - bot;
-						mn1 = balls, mn2 = willfall(i), x = lst[i][0], y = lst[i][1];
-						bot = 3 - bot;
-						continue;
-					}
-					if(mn1 == balls){
-						bot = 3 - bot;
-						int rws = willfall(i);
-						bot = 3 - bot;
-						if(mn2 > rws)
-							mn2 = rws, x = lst[i][0], y = lst[i][1];
-					}
+					auto v = cmp(i);
+					if(bot == 2)
+						swap(v[0], v[1]);
+					if(mn1 > v[0])
+						mn1 = v[0], mn2 = v[1], x = lst[i][0], y = lst[i][1];
+					else if(mn1 == v[0] && mn2 > v[1])
+						mn2 = v[1], x = lst[i][0], y = lst[i][1];
 				}
 				int s_it = search_it({x, y});
 				while(s_it--)
@@ -517,6 +518,10 @@ struct game{
 						}
 						x = s[0] - 'A', y = s[1] - 'A';
 					}
+					else if(x == -1){
+						cout << "\n======GAME OVER=====\n";
+						return;
+					}
 					int s_it = search_it({x, y});
 					if(s_it){
 						while(s_it--)
@@ -531,10 +536,9 @@ struct game{
 						cout << "invlaid input, try again" << '\n';
 				}
 			}
-			string str = to_string(x) + " " + to_string(y);
-			code.push_back(str);
+			code.push_back(x), code.push_back(y);
 			X = x, Y = y;
-			a[x][y] = canon, blast[x][y] = false, exs[x][y] = true;
+			a[x][y] = canon, exs[x][y] = true;
 			if(!check_good({x, y})){
 				++mvs1;
 				if(mode == "normal" && rows-- >= 0)
@@ -633,6 +637,9 @@ struct game{
 					if(times < 0)
 						times = 1021;
 				}
+				strng.clear();
+				for(int i = 0; i < 100000; ++i)
+					strng.push_back(0);
 				do{
 					silent = (c == 'n');
 					gameplay();
@@ -650,15 +657,17 @@ struct game{
 		}
 		return;
 	}
-
+	
 	void update(){
 		if(checking){
 			cout << "ACCEPTED!\n";
 			return;
 		}
 		string tmp = mode;
-		if(toupper(mode[0]) == 'M')
+		if(toupper(mode[0]) == 'M'){
 			mode = "infinite";
+			++strng[sum % ((code.size() - 11) / 2)];
+		}
 		int timer = time(nullptr) - tbr, r_changes = pts;
 		string s = ctime(&tbr), ln;
 		ifstream hs("./accounts/games/" + user + ".txt");

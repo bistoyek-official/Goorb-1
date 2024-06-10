@@ -4,7 +4,7 @@ signed main(){
 	cout << "Goorb chain" << '\n';
 	cout << "Created by: 21" << '\n';
 	cout << "___________________________________\n";
-	game g;
+	make_p();
 	g.play();
 	return 0;
 }

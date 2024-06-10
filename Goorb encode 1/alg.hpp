@@ -19,8 +19,8 @@ struct game{
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
 
 	vector<int> bot();
+	vector<int> cmp(int i);
 	void upd_res(int pos);
-	int cmp(int i, int sen);
 	void fill_factors();
 	void set_factors();
 	string map_it();
@@ -72,7 +72,6 @@ struct game{
 				upd_rnd();
 			}
 			exs[0][i] = true;
-			blast[0][i] = false;
 		}
 		return;
 	}
@@ -271,7 +270,7 @@ struct game{
 			while(s_it--)
 				_rand();
 			code.push_back(x[0]), code.push_back(x[1]);
-			a[x[0]][x[1]] = canon, blast[x[0]][x[1]] = false, exs[x[0]][x[1]] = true;
+			a[x[0]][x[1]] = canon, exs[x[0]][x[1]] = true;
 			if(!check_good(x)){
 				++mvs1;
 				upd_sit(rnd());
@@ -292,9 +291,9 @@ struct game{
 			canon = rnd();
 			upd_res(5);
 		}
+		quality += mvs + mvs1;
 		if(!decode)
 			enough = add_it(factors, res);
-		quality += mvs + mvs1;
 		upd_res(6);
 		return;
 	}
@@ -304,12 +303,14 @@ struct game{
 		if(decode){
 			file.open(dir + "encoded.txt");
 			ofstream f(dir + "decoded.txt");
+			f.close();
 			while(times--){
 				gameplay();
-				f << map_it();
+				ofstream f1(dir + "decoded.txt", ios::app);
+				f1 << map_it();
+				f1.close();
 			}
 			file.close();
-			f.close();
 		}
 		else{
 			if(times == -1)
@@ -322,4 +323,4 @@ struct game{
 		}
 		return;
 	}
-};
+} g;
