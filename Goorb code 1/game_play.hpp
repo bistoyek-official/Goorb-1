@@ -107,7 +107,7 @@ struct game{
 			N = 5, maxn = 31, M = 17, same = 512;
 			addr = 511, addr1 = 1023;
 			bl = 10, blsc = 14;
-			rang = 5;
+			rang = 4;
 			_srand(tb, user_serial);
 		}
 		else{
@@ -256,7 +256,7 @@ struct game{
 				return true;
 			}
 			cout << (mode[0] != 'i' ? "\n====================YOU LOSE!==================|\n" : "\n====================GAME OVER==================|\n");
-			string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
+			string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(((code.size() - 11) / 2));
 			while(report.size() < 47)
 				report += " ";
 			report += "|";
@@ -266,7 +266,7 @@ struct game{
 		}
 		if(mode == "timer" && time(0) - tbr > tl){
 			cout << "\n====================GAME OVER==================|\n";
-			string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
+			string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string((code.size() - 11) / 2);
 			while(report.size() < 47)
 				report += " ";
 			report += "|";
@@ -283,7 +283,7 @@ struct game{
 			if(!checking){
 				c_col(10);
 				cout << "\n====================YOU WIN!===================|\n";
-				string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string(code.size());
+				string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string((code.size() - 11) / 2);
 				while(report.size() < 47)
 					report += " ";
 				report += "|";
@@ -492,6 +492,10 @@ struct game{
 					else if(mn1 == v[0] && mn2 > v[1])
 						mn2 = v[1], x = lst[i][0], y = lst[i][1];
 				}
+				if(x == -1){
+					cout << "\n======GAME OVER=====\n";
+					return;
+				}
 				int s_it = search_it({x, y});
 				while(s_it--)
 					_rand();
@@ -661,6 +665,7 @@ struct game{
 	void update(){
 		if(checking){
 			cout << "ACCEPTED!\n";
+			cout << "strenght: " << sum % ((code.size() - 11) / 2) << '\n';
 			return;
 		}
 		string tmp = mode;
