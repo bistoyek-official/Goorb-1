@@ -1,6 +1,6 @@
 #include "random.hpp"
 
-int constexpr buff = 1, KB = 100, per = 100;
+int constexpr buff = 10, KB = 2, per = 100;
 
 struct node{
 	long long f[11];
@@ -31,7 +31,7 @@ bool add_it(node &obj, int res){
 		decode[res].clear();
 	}
 	if(!((++calls) % per))
-		bank_info();
+		flush_it();
 	return *min_element(rescount.begin(), rescount.end());
 }
 

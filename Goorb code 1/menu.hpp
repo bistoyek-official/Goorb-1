@@ -6,7 +6,7 @@ void menu();
 
 void history(){
     string s1;
-	ifstream games("./accounts/games/" + user + ".txt");
+	ifstream games("./accounts/games/" + user + "/history.txt");
 	head();
 	vector<string> act;
 	while(getline(games, s1))

@@ -20,16 +20,16 @@ signed main(){
 		string s;
 		getline(cin, s);
 		if(s == "1"){
+			time_t t = time(nullptr);
 			_decode_();
 			cout << "task 1:\ndone!\npress any key to continue\n";
-			time_t t = time(nullptr);
 			cout << "in: " << time(nullptr) - t << " seconds\n";
 			getch();
 		}
 		if(s == "2"){
+			time_t t = time(nullptr);
 			_encode_();
 			cout << "task 2:\ndone!\npress any key to continue\n";
-			time_t t = time(nullptr);
 			cout << "in: " << time(nullptr) - t << " seconds\n";
 			getch();
 		}
@@ -37,12 +37,13 @@ signed main(){
 			int times;
 			cout << "How many times? ";
 			cin >> times;
+			times = max(times, 1);
 			time_t t = time(nullptr);
 			srand(t);
 			cls();
 			calls = quality = 0;
 			cout << "starting time: " << ctime(&t) << "tries: " << times << "\n--------\n";
-			g.play("", max(times, 21));
+			g.play("", times);
 			cout << "task 3:\ndone!\npress any key to continue\n";
 			cout << "in: " << time(nullptr) - t << " seconds\n";
 			getch();

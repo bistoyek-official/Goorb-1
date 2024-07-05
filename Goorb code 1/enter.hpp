@@ -104,14 +104,17 @@ void sign_up(vector<pair<string, string>> &users){
 		us << e.first << '\n';
 		ps << e.second << '\n';
 	}
+	string command = "mkdir .\\accounts\\games\\" + user;
+	system(command.c_str());
 	user = hs(s1);
 	user1 = s1;
 	us << user << '\n';
 	ps << hs(s2) << '\n';
 	us.close();
 	ps.close();
-	ofstream games("./accounts/games/" + user + ".txt");
-	games.close();
+	ofstream g0("./accounts/games/" + user + "/history.txt");
+	ofstream g1("./accounts/games/" + user + "/mine info.txt");
+	g0.close(), g1.close();
 	string modes[4] = {"", "infinite", "timer", "normal"};
 	for(int i = 0; i < 4; ++i){
 		ifstream rank("./accounts/ranking" + modes[i] + ".txt");

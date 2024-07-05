@@ -1,29 +1,19 @@
-#include "note.hpp"
+#include "random.hpp"
 
 struct game{
 
-	int maxn, N, M, same, addr, addr1, bl, blsc, res, rang;
-	
-	long long tb, user_serial;
+	int maxn, N, M, same, addr, addr1, bl, blsc, rang, maxmove = 5000;
 
 	ifstream file;
-	node factors;
 
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
-	vector<int> code;
-	bool enough = false, decode;
+	long long tbr, tb;
+	bool bad, is_valid, will_done, start;
 
-	int pts, mvs, mvs1, tries = 0, canon, ini;
-	
+	int pts = 0, tries = 0, sum, moves, canon, ini;
+
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
-
-	vector<int> bot();
-	vector<int> cmp(int i);
-	void upd_res(int pos);
-	void fill_factors();
-	void set_factors();
-	string map_it();
 
 	int rnd(){
 		int res = 0, k;
@@ -76,27 +66,53 @@ struct game{
 		return;
 	}
 
-	void gen(){
+	void gen(string &s){
+		bad = false;
+		sum = 0;
+		ini = pts = 0;
+		tbr = time(nullptr);
 		++tries;
-		if(decode)
-			set_factors();
-		else
-			fill_factors();
-		mvs = mvs1 = res = ini = pts = 0;
+		long long user_serial = 0;
+		if(file.is_open())
+			file.close();
+		file.open(s);
+		if(!file.is_open()){
+			bad = true;
+			return;
+		}
+		file >> user_serial >> tb >> N >> maxn >> M >> same >> addr >> addr1 >> bl >> blsc >> rang;
 		_srand(tb, user_serial);
-		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
-		code.push_back(user_serial), code.push_back(tb);
-		code.push_back(N), code.push_back(maxn), code.push_back(M);
-		code.push_back(same), code.push_back(addr), code.push_back(addr1);
-		code.push_back(bl), code.push_back(blsc), code.push_back(rang);
+		a.clear(), exs.clear(), blast.clear(), lst.clear();
 		for(int i = 0; i < maxn; ++i){
 			a.push_back({}), exs.push_back({}), blast.push_back({});
 			for(int j = 0; j < M; ++j)
 				a[i].push_back(0), exs[i].push_back(0), blast[i].push_back(0);
 		}
-		for(int i = 0; i < N; ++i)
-			add_row();
-		canon = rnd();
+		if(start){
+			for(int i = 0; i < N; ++i)
+				add_row();
+			canon = rnd();
+		}
+		else{
+			int x;
+			for(int i = 0; i < maxn; ++i)
+				for(int j = 0; j < M; ++j){
+					file >> x;
+					a[i][j] = x;
+					if(x)
+						exs[i][j] = true;
+					if(a[i][j] && (i + j) % 2)
+						ini = 1;
+				}
+			file >> x;
+			canon = x;
+			for(int i = 0; i < 18; ++i){
+				file >> x;
+				random[i] = x;
+			}
+			file >> x;
+			jomle = x;
+		}
 		return;
 	}
 
@@ -114,8 +130,12 @@ struct game{
 	}
 
 	bool check_end(){
-		if(not_null(maxn - 1) || !not_null(0))
+		if(not_null(maxn - 1))
 			return true;
+		if(!not_null(0)){
+			is_valid = will_done;
+			return true;
+		}
 		return false;
 	}
 
@@ -128,7 +148,7 @@ struct game{
 			return true;
 		if(a[p[0]][p[1]] / (rang + 2) == a[c[0]][c[1]] % (rang + 2))
 			return true;
-		if(a[p[0]][p[1]] % (rang + 2)  == a[c[0]][c[1]] / (rang + 2))
+		if(a[p[0]][p[1]] % (rang + 2) == a[c[0]][c[1]] / (rang + 2))
 			return true;
 		if(a[p[0]][p[1]] / (rang + 2) == a[c[0]][c[1]] / (rang + 2) && a[c[0]][c[1]] > (rang + 2))
 			return true;
@@ -221,6 +241,7 @@ struct game{
 									break;
 								}
 		ok.clear();
+		sum += lst.size();
 		return;
 	}
 
@@ -250,75 +271,84 @@ struct game{
 		return l + 1;
 	}
 
-	void gameplay(){
-		gen();
-		upd_res(0);
+	void gameplay(string &s){
+		gen(s);
+		if(bad)
+			return;
+		moves = 0;
+		int mvs = 0, mvs1 = 0;
 		while(true){
-			upd_res(1);
 			if(check_end())
-				break;
-			updlst();
-			vector<int> x = bot();
-			if(x.empty()){
-				upd_res(2);
-				break;
+				return;
+			if(moves == maxmove){
+				int x;
+				for(int i = 0; i < maxn; ++i)
+					for(int j = 0; j < M; ++j){
+						file >> x;
+						if(a[i][j] != x)
+							return;
+					}
+				file >> x;
+				if(x != canon)
+					return;
+				for(int i = 0; i < 18; ++i){
+					file >> x;
+					if(random[i] != x)
+						return;
+				}
+				file >> x;
+				if(x != jomle)
+					return;
+				is_valid = true;
+				return;
 			}
-			upd_res(3);
-			int s_it = search_it(x);
-			while(s_it--)
-				_rand();
-			code.push_back(x[0]), code.push_back(x[1]);
-			a[x[0]][x[1]] = canon, exs[x[0]][x[1]] = true;
-			if(!check_good(x)){
+			updlst();
+			++moves;
+			int x, y;
+			file >> x >> y;
+			int s_it = search_it({x, y});
+			if(s_it)
+				while(s_it--)
+					_rand();
+			else
+				return;
+			a[x][y] = canon, exs[x][y] = true;
+			if(!check_good({x, y})){
 				++mvs1;
 				upd_sit(rnd());
-				upd_res(4);
 				if(_rand() <= addr1)
 					add_row();
 				if(check_end())
-					break;
+					return;
 				continue;
 			}
 			++mvs;
-			dfs_blast(x), --pts;
+			dfs_blast({x, y}), --pts;
 			fall();
 			upd_sit(canon);
 			upd_rnd();
 			if(_rand() <= addr)
 				add_row();
 			canon = rnd();
-			upd_res(5);
 		}
-		quality += mvs + mvs1;
-		if(!decode)
-			enough = add_it(factors, res);
-		upd_res(6);
 		return;
 	}
 
-	void play(string dir = "", int times = -1){
-		decode = !dir.empty();
-		if(decode){
-			file.open(dir + "encoded.txt");
-			ofstream f(dir + "decoded.txt");
-			f.close();
-			while(times--){
-				gameplay();
-				ofstream f1(dir + "decoded.txt", ios::app);
-				f1 << map_it();
-				f1.close();
-			}
-			file.close();
-		}
-		else{
-			if(times == -1)
-				while(!enough)
-					gameplay();
-			else
-				while(times-- > 0)
-					gameplay();
-			flush_it();
-		}
+	void play(string s, bool start = false, bool will_done = false){
+		this -> start = start;
+		this -> will_done = will_done;
+		is_valid = false;
+		gameplay(s);
+		if(is_valid)
+			cout << "ACCEPTED!" << '\n';
+		else
+			cout << "INVALID" << '\n';
+		/*
+		if(is_valid)
+			send_it(true, sum, moves);
+		else
+			send_it(false);
+		*/
 		return;
 	}
 } g;

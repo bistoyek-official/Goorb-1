@@ -92,8 +92,6 @@ struct game{
 		}
 		for(int i = 0; i < N; ++i)
 			add_row();
-		for(int i = (N + ini) % 2; i < M; i += 2)
-			lst.push_back({N, i});
 		canon = rnd();
 		return;
 	}
@@ -264,6 +262,34 @@ struct game{
 		while(true){
 			if(check_end())
 				return;
+			if(moves % 5000 == 0 && moves){
+				int x;
+				for(int i = 0; i < maxn; ++i)
+					for(int j = 0; j < M; ++j){
+						file >> x;
+						if(a[i][j] != x){
+							cout << "INVALID" << '\n';
+							return;
+						}
+					}
+				file >> x;
+				if(x != canon){
+					cout << "INVALID" << '\n';
+					return;
+				}
+				for(int i = 0; i < 18; ++i){
+					file >> x;
+					if(x != random[i]){
+						cout << "INVALID!" << '\n';
+						return;
+					}
+				}
+				file >> x;
+				if(x != jomle){
+					cout << "INVALID!" << '\n';
+					return;	
+				}
+			}
 			updlst();
 			++moves;
 			int x, y;
@@ -302,12 +328,11 @@ struct game{
 		int times = 1021;
 		while(--times && !enought)
 			gameplay();
-		return;
 	}
 
 	void update(){
 		cout << "ACCEPTED!\n";
-		cout << "strength: " << sum % moves << '\n';
+		cout << "strength: " << min(sum % moves, 99999) << '\n';
 		return;
 	}
 } g;
