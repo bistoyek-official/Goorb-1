@@ -115,6 +115,12 @@ struct game{
 			return true;
 		}
 		if(!not_null(0)){
+			string s = "";
+			file >> s;
+			if(!s.empty()){
+				cout << "INVALID" << '\n';
+				return true;
+			}
 			update();
 			return true;
 		}

@@ -5,6 +5,7 @@ signed main(){
 	cout << "Created by: 21" << '\n';
 	cout << "___________________________________\n";
 	make_p();
-	check();
+	while(true)
+		check();
 	return 0;
 }
