@@ -684,10 +684,12 @@ struct game{
 				strng.clear();
 				for(int i = 0; i < 100000; ++i)
 					strng.push_back(0);
+				silent = (c == 'n');
 				do{
-					silent = (c == 'n');
 					gameplay();
-				} while(--times && c == 'n' && !enough);
+					if(kbhit() && getch() == 'Q')
+						break;
+				} while(--times && silent && !enough);
 				if(toupper(mode[0]) == 'M' && !checking && !checkmanual){
 					ifstream r0("./accounts/games/" + user + "/mine info.txt");
 					int num, num1;
