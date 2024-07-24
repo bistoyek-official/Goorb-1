@@ -13,7 +13,7 @@ string botsname;
 void cls(){
 	#ifdef __unix__
 		system("clear");
-	#elif defined(__MACH__)
+	#elifdef __MACH__
 		system("clear");
 	#else
 		system("cls");

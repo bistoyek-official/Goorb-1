@@ -15,6 +15,6 @@
 ./Goorb encode 1/bots/*
 ./Goorb encode 1/bank/*
 
-!./Goorb encode 1/messages/bot-0/*
-!./Goorb encode 1/bots/bot-0/*
-!./Goorb encode 1/bank/bot-0/*
+!./Goorb encode 1/messages/bot-0/
+!./Goorb encode 1/bots/bot-0/
+!./Goorb encode 1/bank/bot-0/
