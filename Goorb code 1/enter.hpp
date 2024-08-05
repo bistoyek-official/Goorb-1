@@ -104,10 +104,10 @@ void sign_up(vector<pair<string, string>> &users){
 		us << e.first << '\n';
 		ps << e.second << '\n';
 	}
-	string command = "mkdir .\\accounts\\games\\" + user;
-	system(command.c_str());
 	user = hs(s1);
 	user1 = s1;
+	string command = "mkdir .\\accounts\\games\\" + user;
+	system(command.c_str());
 	us << user << '\n';
 	ps << hs(s2) << '\n';
 	us.close();
