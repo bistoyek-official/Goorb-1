@@ -98,7 +98,7 @@ void check(){
 	input = "";
 	fin >> input;
 	rang = ok(input, 4);
-	if(rang == -1){
+	if(rang == -1 || rang > 4095){
 		cout << "INVALID" << '\n';
 		return;
 	}
