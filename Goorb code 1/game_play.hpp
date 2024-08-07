@@ -1,5 +1,31 @@
 #include "random.hpp"
 
+vector<int> strng;
+
+bool do_it;
+
+void upd_info(){
+    ifstream r0("./accounts/games/" + user + "/mine info.txt");
+    int num, num1;
+    while(r0 >> num){
+        r0 >> num1;
+        strng[num] += num1;
+    }
+    r0.close();
+    ofstream r1("./accounts/games/" + user + "/mine info.txt");
+    for(int i = 0; i < 100000; ++i)
+        if(strng[i])
+            r1 << i << " " << strng[i] << '\n';
+    r1.close();
+    return;
+}
+
+BOOL WINAPI ConsoleHandler(DWORD signal) {
+    if(signal == CTRL_CLOSE_EVENT && do_it)
+        upd_info();
+    return TRUE;
+}
+
 struct game{
 
 	int maxn, N, M, same, addr, addr1, tries = 0, bot, rang;
@@ -17,8 +43,6 @@ struct game{
 
 	int pts = 0, canon, ini, tl = 120, rows, X, Y, bl, blsc;
 	bool frombot;
-	
-	vector<int> strng;
 
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
 
@@ -105,10 +129,10 @@ struct game{
 		if(!checking){
 			if(!frombot)
 				silent = false;
-			N = 5, maxn = 31, M = 17, same = 512;
-			addr = 511, addr1 = 1023;
-			bl = 10, blsc = 14;
-			rang = 5;
+			N = 1, maxn = 4, M = 3, same = 512;
+			addr = 0, addr1 = 0;
+			bl = 100, blsc = 140;
+			rang = 1;
 			_srand(tb, user_serial);
 		}
 		else{
@@ -280,8 +304,8 @@ struct game{
 				return false;
 			}
 			if(!checking){
-				//if(min(sum % moves, 99999LL)) ////pak kon
-				//	return true;                ////pak kon
+				if(min(sum % moves, 99999LL)) ////pak kon
+					return true;                ////pak kon
 				c_col(10);
 				cout << "\n====================YOU WIN!===================|\n";
 				string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string((code.size() - 11) / 2);
@@ -614,6 +638,7 @@ struct game{
 	}
 
 	void play(){
+	    SetConsoleCtrlHandler(ConsoleHandler, TRUE);
 		while(true){
 			frombot = false;
 			tries = 0;
@@ -657,10 +682,12 @@ struct game{
 				if(!checking){
 					cout << "Do you want to use bot? (y/n)" << '\n';
 					frombot = ('y' == getch());
+					cout << (frombot ? 'y' : 'n') << '\n';
 				}
 				else{
 					frombot = false;
 					cout << "Do you want to watch the game? (y/n)" << '\n';
+					cout << (c == 'n' ? 'n' : 'y') << '\n';
 					c = getch();
 				}
 				mode = (frombot ? "Miner-Bot" : "Miner-Manual");
@@ -669,6 +696,7 @@ struct game{
 					cin >> bot;
 					cout << "Do you want to watch the game? (y/n)" << '\n';
 					c = getch();
+					cout << (c == 'n' ? 'n' : 'y') << '\n';
 				}
 				if(!checking){
 					cout << "enter your serial code: ";
@@ -678,32 +706,19 @@ struct game{
 				if((frombot && c == 'n') || checking){
 					cout << "How many tries do you want to do? (enter the number)" << '\n';
 					cin >> times;
-					if(times < 0)
+					if(times <= 0 || 1021 < times)
 						times = 1021;
 				}
-				strng.clear();
-				for(int i = 0; i < 100000; ++i)
-					strng.push_back(0);
+				strng.assign(100000, 0);
 				silent = (c == 'n');
+				do_it = (toupper(mode[0]) == 'M' && !checking && !checkmanual);
 				do{
 					gameplay();
 					if(kbhit() && getch() == 'Q')
 						break;
 				} while(--times && silent && !enough);
-				if(toupper(mode[0]) == 'M' && !checking && !checkmanual){
-					ifstream r0("./accounts/games/" + user + "/mine info.txt");
-					int num, num1;
-					while(r0 >> num){
-						r0 >> num1;
-						strng[num] += num1;
-					}
-					r0.close();
-					ofstream r1("./accounts/games/" + user + "/mine info.txt");
-					for(int i = 0; i < 100000; ++i)
-						if(strng[i])
-							r1 << i << " " << strng[i] << '\n';
-					r1.close();
-				}
+				if(toupper(mode[0]) == 'M' && !checking && !checkmanual)
+					upd_info();
 				enough = false;
 				tries = 0;
 			}
@@ -717,7 +732,7 @@ struct game{
 		}
 		return;
 	}
-	
+
 	void update(){
 		if(checking){
 			cout << "ACCEPTED!\n";
@@ -726,8 +741,11 @@ struct game{
 		}
 		string tmp = mode;
 		if(toupper(mode[0]) == 'M'){
-			mode = "infinite";
-			++strng[min(sum % moves, 99999LL)];
+            ifstream f("./accounts/games/" + user + "/" + to_string(tb) + ".txt");
+            if(!f.is_open())
+                ++strng[min(sum % moves, 99999LL)];
+            f.close();
+            return;
 		}
 		int timer = time(nullptr) - tbr, r_changes = pts;
 		string s = ctime(&tbr), ln;
@@ -774,7 +792,7 @@ struct game{
 		rank1.close();
 		mode = tmp;
 		if(toupper(mode[0]) == 'M'){
-			ofstream coin("./accounts/games/" + user + "/" + to_string(time(nullptr)) + ".txt");
+			ofstream coin("./accounts/games/" + user + "/" + to_string(tb) + ".txt");
 			for(auto &e: code)
 				coin << e << '\n';
 		}

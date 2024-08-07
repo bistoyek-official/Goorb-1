@@ -14,7 +14,7 @@ void init(){
 void renew(){
 	#ifdef __unix__
 		system("rm -fr ./bank/bot-1/*");
-	#elif defined(__MACH__)
+	#elifdef __mach__
 		system("rm -fr ./bank/bot-1/*");
 	#else
 		system("del /s /q .\\bank\\bot-1\\* > nul");

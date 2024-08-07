@@ -2,3 +2,6 @@
 *.o
 *.exe
 *.out
+
+./Goorb code 1/accounts/games/*
+/Goorb code 1/accounts/games/*
