@@ -4,3 +4,7 @@
 *.out
 
 /Goorb code 1/accounts/games/*
+
+/Goorb encode 1/bank/*
+/Goorb encode 1/messages/*
+/Goorb encode 1/bots/*
