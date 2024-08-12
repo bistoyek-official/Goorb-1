@@ -5,6 +5,8 @@ vector<int> strng;
 bool do_it;
 
 void upd_info(){
+    if(strng.empty())
+        return;
     ifstream r0("./accounts/games/" + user + "/mine info.txt");
     int num, num1;
     while(r0 >> num){
@@ -13,9 +15,10 @@ void upd_info(){
     }
     r0.close();
     ofstream r1("./accounts/games/" + user + "/mine info.txt");
-    for(int i = 0; i < 100000; ++i)
-        if(strng[i])
+    for(int& e: strng)
+        if(e)
             r1 << i << " " << strng[i] << '\n';
+    strng.clear();
     r1.close();
     return;
 }
@@ -742,8 +745,13 @@ struct game{
 		string tmp = mode;
 		if(toupper(mode[0]) == 'M'){
             ifstream f("./accounts/games/" + user + "/" + to_string(tb) + ".txt");
-            if(!f.is_open())
+            if(!f.is_open()){
                 ++strng[min(sum % moves, 99999LL)];
+                ofstream coin("./accounts/games/" + user + "/" + to_string(tb) + ".txt");
+                for(auto &e: code)
+                    coin << e << '\n';
+                coin.close();
+            }
             f.close();
             return;
 		}
@@ -791,11 +799,6 @@ struct game{
 			rank1 << vec[i] << '\n';
 		rank1.close();
 		mode = tmp;
-		if(toupper(mode[0]) == 'M'){
-			ofstream coin("./accounts/games/" + user + "/" + to_string(tb) + ".txt");
-			for(auto &e: code)
-				coin << e << '\n';
-		}
 		return;
 	}
 };
