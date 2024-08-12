@@ -15,8 +15,8 @@ void upd_info(){
     }
     r0.close();
     ofstream r1("./accounts/games/" + user + "/mine info.txt");
-    for(int& e: strng)
-        if(e)
+    for(int i = 0; i < strng.size(); ++i)
+        if(strng[i])
             r1 << i << " " << strng[i] << '\n';
     strng.clear();
     r1.close();
