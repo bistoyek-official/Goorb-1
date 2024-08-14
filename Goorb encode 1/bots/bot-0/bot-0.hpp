@@ -125,14 +125,15 @@ void _encode_(){
 	}
 	bitset<1024 * 8 * 100> b_set;
 	int cnt = 0;
-	string s;
+	string s, prev = "";
 	while(getline(f2, s)){
-		s += '\n';
+		s += prev;
 		for(int i = 0; i < s.size(); ++i)
 			for(int j = 0; j < 5; ++j){
 				b_set[(cnt + i) * 5 + j] = (bool)((mp[s[i]] & (1 << (4 - j))) != 0);
 			}
 		cnt += s.size();
+		prev = "\n";
 	}
 	int ln = (cnt * 5 + 9) / 10;
 	for(int i = 0; i < ln; ++i){
