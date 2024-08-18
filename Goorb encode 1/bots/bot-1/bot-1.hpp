@@ -39,7 +39,7 @@ void game::set_factors(){
 void game::fill_factors(){
 	tb = time(nullptr) + tries;
 	user_serial = 21;
-	N = 5, maxn = 31, M = 17, same = 512;
+	N = 5, maxn = 31, M = 17, same = 2;
 	addr = 511, addr1 = 1023;
 	bl = 10, blsc = 14;
 	rang = 5;

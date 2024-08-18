@@ -40,9 +40,9 @@ void game::fill_factors(){
 	maxn = 31;
 	N = 5;
 	M = 17;
-	same = 512;
+	same = 2;
 	addr1 = 1023;
-	addr = 512;
+	addr = 511;
 	bl = 10;
 	blsc = 14;
 	tb = time(nullptr) + tries;

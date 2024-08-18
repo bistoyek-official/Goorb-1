@@ -42,7 +42,7 @@ struct game{
 			}
 		for(int i = ini; i < M; i += 2){
 			for(int k = 0; k < 3; ++k){
-				if(!k && i != ini && _rand() % same == 0)
+				if(!k && i != ini && _rand() <= same)
 					a[0][i] = a[0][i - 2];
 				else
 					a[0][i] = rnd();
@@ -338,7 +338,7 @@ struct game{
 
 	void update(){
 		cout << "ACCEPTED!\n";
-		cout << "strength: " << min(sum % moves, 99999) << '\n';
+		cout << "strength: " << min((sum + 1000 * M) % (moves + 2000 * M), 99999) << '\n';
 		return;
 	}
 } g;

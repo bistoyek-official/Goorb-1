@@ -52,7 +52,7 @@ struct game{
 			}
 		for(int i = ini; i < M; i += 2){
 			for(int k = 0; k < 3; ++k){
-				if(!k && i != ini && _rand() % same == 0)
+				if(!k && i != ini && _rand() <= same)
 					a[0][i] = a[0][i - 2];
 				else
 					a[0][i] = rnd();

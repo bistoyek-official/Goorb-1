@@ -1,5 +1,7 @@
 #include "p_validation.hpp"//jaye in bayad chizi bezari ke file ro befreste be server haie ke mikhaim
 //#include "value.hpp"
+//			       59  59 30    30 30 10    10     10    30  30     8
+//                  O   O  O        O
 long long user_serial, tb, N, maxn, M, same, addr, addr1, bl, blsc, rang, jml;
 vector<vector<int>> a;
 
@@ -11,7 +13,7 @@ long long ok(string &s, int lim){
 			return -1;
 	long long ans = 0;
 	for(int i = 0; i < s.size(); ++i)
-		ans *= 10, ans += s[i] - '0';
+		ans = (ans * 10) + (s[i] - '0');
 	return ans;
 }
 
@@ -28,83 +30,83 @@ void check(){
 	input = "";
 	fin >> input;
 	user_serial = ok(input, 18);
-	if(user_serial == -1){
+	if(user_serial == -1 || user_serial >= (1LL << 59)){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
 	tb = ok(input, 18);
-	if(tb == -1){
+	if(tb == -1 || tb >= (1LL << 59)){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
-	N = ok(input, 9);
-	if(N == -1){
+	N = ok(input, 10);
+	if(N == -1 || N >= (1 << 30)){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
-	maxn = ok(input, 9);
-	if(maxn == -1){
+	maxn = ok(input, 10);
+	if(maxn == -1 || maxn >= (1 << 30)){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
-	M = ok(input, 9);
-	if(M == -1){
+	M = ok(input, 10);
+	if(M == -1 || M >= (1 << 30)){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
-	same = ok(input, 9);
-	if(same == -1 || !same || same > 1024){
+	same = ok(input, 4);
+	if(same == -1 || same > 1023){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
-	addr = ok(input, 9);
+	addr = ok(input, 4);
 	if(addr == -1 || addr > 1023){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
-	addr1 = ok(input, 9);
+	addr1 = ok(input, 4);
 	if(addr1 == -1 || addr1 > 1023){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
-	bl = ok(input, 9);
-	if(bl == -1){
+	bl = ok(input, 10);
+	if(bl == -1 || bl >= (1 << 30)){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
-	blsc = ok(input, 9);
-	if(blsc == -1){
+	blsc = ok(input, 10);
+	if(blsc == -1 || blsc >= (1 << 30)){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	input = "";
 	fin >> input;
-	rang = ok(input, 4);
-	if(rang == -1 || rang > 4095){
+	rang = ok(input, 3);
+	if(rang == -1 || rang > 255){
 		cout << "INVALID" << '\n';
 		return;
 	}
 	/*
 	if(!has_value(user_serial, tb, N, maxn, M, same, addr, addr1, bl, blsc, rang)){
-		cout << "INVALID2" << '\n';
+		cout << "INVALID" << '\n';
 		return;
 	}
 	*/

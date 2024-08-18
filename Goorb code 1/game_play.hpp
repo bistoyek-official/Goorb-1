@@ -76,14 +76,14 @@ struct game{
 			}
 		for(int i = ini; i < M; i += 2){
 			if(toupper(mode[0]) != 'M'){
-				if(ini != i && _rand() % same == 0)
+				if(ini != i && _rand() <= same)
 					a[0][i] = a[0][i - 2];
 				else
 					a[0][i] = rnd();
 			}
 			else{
 				for(int k = 0; k < 3; ++k){
-					if(!k && i != ini && _rand() % same == 0)
+					if(!k && i != ini && _rand() <= same)
 						a[0][i] = a[0][i - 2];
 					else
 						a[0][i] = rnd();
@@ -108,17 +108,6 @@ struct game{
 		return;
 	}
 
-	void sit(){
-		head();
-		for(int i = 0; i < maxn; ++i, cout << '\n')
-			for(int j = 0; j < M; ++j)
-				cout << exs[i][j] << " ";
-		cout << endl;
-		getch();
-		prt_scr(canon);
-		return;
-	}
-
 	void gen(){
 		sum = 0, moves = 0;
 		ini = pts = 0;
@@ -132,10 +121,10 @@ struct game{
 		if(!checking){
 			if(!frombot)
 				silent = false;
-			N = 1, maxn = 4, M = 3, same = 512;
-			addr = 0, addr1 = 0;
-			bl = 100, blsc = 140;
-			rang = 1;
+			N = 5, maxn = 31, M = 17, same = 2;
+			addr = 511, addr1 = 1023;
+			bl = 10, blsc = 14;
+			rang = 5;
 			_srand(tb, user_serial);
 		}
 		else{
@@ -287,7 +276,7 @@ struct game{
 				report += " ";
 			report += "|";
 			cout << report << ":: " << jomle << '\n';
-			cout << sum / max(1.0, (code.size() - 11) / 2.0) + 1 << '\n';
+			cout << sum / max(1.0, moves * 1.0) + 1 << '\n';
 			return true;
 		}
 		if(mode == "timer" && time(0) - tbr > tl){
@@ -297,7 +286,7 @@ struct game{
 				report += " ";
 			report += "|";
 			cout << report << ":: " << jomle << '\n';
-			cout << sum / max(1.0, (code.size() - 11) / 2.0) + 1 << '\n';
+			cout << sum / max(1.0, moves * 1.0) + 1 << '\n';
 			return true;
 		}
 		if(!not_null(0)){
@@ -307,8 +296,8 @@ struct game{
 				return false;
 			}
 			if(!checking){
-				if(min(sum % moves, 99999LL)) ////pak kon
-					return true;                ////pak kon
+				//if(min(sum % moves, 99999LL)) //
+				//	return true;                //
 				c_col(10);
 				cout << "\n====================YOU WIN!===================|\n";
 				string report = "Tries: " + to_string(tries) + ", Timer: " + to_string(te) + ", Score: " + to_string(pts) + ", moves: " + to_string((code.size() - 11) / 2);
@@ -316,7 +305,7 @@ struct game{
 					report += " ";
 				report += "|";
 				cout << report << ":: " << jomle << '\n';
-				cout << "strength: " << min(sum % moves, 99999LL) << '\n';
+				cout << "strength: " << min((sum + 1000 * M) % (moves + 2000 * M), 99999LL) << '\n';
 				cout << sum / max(1.0, moves * 1.0) + 1 << '\n';
 				c_col(15);
 			}
@@ -583,10 +572,6 @@ struct game{
 							cout << "\n======GAME OVER=====\n";
 							return;
 						}
-						if(s == "s"){
-							sit();
-							continue;
-						}
 						x = s[0] - 'A', y = s[1] - 'A';
 					}
 					else if(x == -1){
@@ -690,8 +675,8 @@ struct game{
 				else{
 					frombot = false;
 					cout << "Do you want to watch the game? (y/n)" << '\n';
-					cout << (c == 'n' ? 'n' : 'y') << '\n';
 					c = getch();
+					cout << (c == 'n' ? 'n' : 'y') << '\n';
 				}
 				mode = (frombot ? "Miner-Bot" : "Miner-Manual");
 				if(frombot){
@@ -722,6 +707,7 @@ struct game{
 				} while(--times && silent && !enough);
 				if(toupper(mode[0]) == 'M' && !checking && !checkmanual)
 					upd_info();
+				do_it = false;
 				enough = false;
 				tries = 0;
 			}
@@ -739,14 +725,14 @@ struct game{
 	void update(){
 		if(checking){
 			cout << "ACCEPTED!\n";
-			cout << "strength: " << min(sum % moves, 99999LL) << '\n';
+			cout << "strength: " << min((sum + 1000 * M)  % (moves + 2000 * M), 99999LL) << '\n';
 			return;
 		}
 		string tmp = mode;
 		if(toupper(mode[0]) == 'M'){
             ifstream f("./accounts/games/" + user + "/" + to_string(tb) + ".txt");
             if(!f.is_open()){
-                ++strng[min(sum % moves, 99999LL)];
+                ++strng[min((sum + 1000 * M) % (moves + 2000 * M), 99999LL)];
                 ofstream coin("./accounts/games/" + user + "/" + to_string(tb) + ".txt");
                 for(auto &e: code)
                     coin << e << '\n';
