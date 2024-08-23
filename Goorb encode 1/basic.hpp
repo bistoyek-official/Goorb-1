@@ -8,7 +8,7 @@
 #include<bitset>
 using namespace std;
 
-string botsname;
+string keysname;
 
 void cls(){
 	#ifdef __unix__

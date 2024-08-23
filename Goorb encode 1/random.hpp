@@ -2,7 +2,7 @@
 
 long long jomle, mod = (1 << 16) + 1;
 
-long long random[18], seed[18], us[18], p[(1 << 16) + 1][11];
+long long random[18], seed[18], sn[18], p[(1 << 16) + 1][11];
 
 void make_p(){
 	for(int i = 0; i < mod; ++i){
@@ -28,18 +28,18 @@ long long binpow(long long a, long long b){
 int _rand(){
 	long long sum = 1;
 	for(int i = 0; i < 18; ++i)
-		sum = (sum + us[i] * p[random[i]][seed[i]]) % mod;
+		sum = (sum + sn[i] * p[random[i]][seed[i]]) % mod;
 	random[0] = binpow(sum + (int)(sum == 0), ++jomle);
 	for(int i = 0; i < 17; ++i)
 		swap(random[i], random[i + 1]);
 	return random[17] & 1023;
 }
 
-void _srand(long long tb, long long u_s){
+void _srand(long long tb, long long serial_number){
 	for(int i = 0; i < 18; ++i){
-		us[i] = u_s % 10 + 1;
+		sn[i] = serial_number % 10 + 1;
 		seed[i] = tb % 10 + 1;
-		u_s /= 10;
+		serial_number /= 10;
 		tb /= 10;
 		random[i] = 0;
 	}

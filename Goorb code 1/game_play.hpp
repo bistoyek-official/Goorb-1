@@ -487,6 +487,18 @@ struct game{
 		return l + 1;
 	}
 
+	vector<int> bot_(){
+		vector<int> mn = cmp(0), ans = lst[0];
+		for(int i = 1; i < lst.size(); ++i){
+			auto v = cmp(i);
+			if(bot == 2)
+				swap(v[0], v[1]);
+			if(v < mn)
+				mn = v, ans = lst[i];
+		}
+		return ans;
+	}
+
 	void gameplay(){
 		gen();
 		if(enough)
@@ -537,21 +549,12 @@ struct game{
 			updlst();
 			int x, y;
 			if(frombot){
-				int mn1 = 1000000021, mn2 = 1000000021;
-				x = lst[0][0], y = lst[0][1];
-				for(int i = 0; i < lst.size(); ++i){
-					auto v = cmp(i);
-					if(bot == 2)
-						swap(v[0], v[1]);
-					if(mn1 > v[0])
-						mn1 = v[0], mn2 = v[1], x = lst[i][0], y = lst[i][1];
-					else if(mn1 == v[0] && mn2 > v[1])
-						mn2 = v[1], x = lst[i][0], y = lst[i][1];
-				}
-				if(x == -1){
+				auto ans = bot_();
+				if(ans.empty()){
 					cout << "\n======GAME OVER=====\n";
 					return;
 				}
+				x = ans[0], y = ans[1];
 				int s_it = search_it({x, y});
 				while(s_it--)
 					_rand();

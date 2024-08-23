@@ -10,9 +10,9 @@ signed main(){
 		time_t t = time(0);
 		cout << "___________________________________\n";
 		cout << ctime(&t);
-		cout << "Bot's name: " << botsname << '\n';
+		cout << "Key's name: " << keysname << '\n';
 		cout << "___________________________________\n\n";
-		cout << "You have this options:" << '\n';
+		cout << "You have these options:" << '\n';
 		cout << "  1. decode\n";
 		cout << "  2. encode\n";
 		cout << "  3. make stronger the bank\n";
@@ -37,9 +37,8 @@ signed main(){
 			int times;
 			cout << "How many times? ";
 			cin >> times;
-			times = max(times, 1);
+			times = min(max(times, 1), 1021);
 			time_t t = time(nullptr);
-			srand(t);
 			cls();
 			calls = quality = 0;
 			cout << "starting time: " << ctime(&t) << "tries: " << times << "\n--------\n";
@@ -51,12 +50,10 @@ signed main(){
 		if(s == "4"){
 			renew();
 			time_t t = time(nullptr);
-			srand(t);
 			cls();
 			calls = quality = 0;
 			cout << "starting time: " << ctime(&t) << "--------\n";
-			for(auto &e: rescount)
-				e = 0;
+			rescount = vector<int>(1 << K, 0);
 			g.play();
 			cout << "task 4:\ndone!\npress any key to continue\n";
 			cout << "in: " << time(nullptr) - t << " seconds\n";

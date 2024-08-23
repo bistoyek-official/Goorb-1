@@ -2,15 +2,15 @@
 
 int constexpr buff = 10, KB = 2, per = 100;
 
-struct node{
+struct cipher_block{
 	long long f[11];
 };
 
 struct note{
-	void note_it(ofstream &f, node &obj);
+	void note_it(ofstream &f, cipher_block &obj);
 } nt;
 
-vector<vector<node>> decode;
+vector<vector<cipher_block>> decode;
 vector<int> rescount;
 
 long long calls = 0, quality = 0;
@@ -18,13 +18,13 @@ long long calls = 0, quality = 0;
 void flush_it();
 void bank_info();
 
-bool add_it(node &obj, int res){
+bool add_it(cipher_block &obj, int res){
 	++rescount[res];
 	decode[res].push_back(obj);
 	if(sizeof(decode) >= 1024.0 * KB)
 		flush_it();
 	else if(decode[res].size() == buff){
-		ofstream f("./bank/" + botsname + "/" + to_string(res) + ".txt", ios::app);
+		ofstream f("./bank/" + keysname + "/" + to_string(res) + ".txt", ios::app);
 		for(int i = 0; i < decode[res].size(); ++i)
 			nt.note_it(f, decode[res][i]);
 		f.close();
@@ -37,7 +37,7 @@ bool add_it(node &obj, int res){
 
 void flush_it(){
 	for(int res = 0; res < decode.size(); ++res){
-		ofstream f("./bank/" + botsname + "/" + to_string(res) + ".txt", ios::app);
+		ofstream f("./bank/" + keysname + "/" + to_string(res) + ".txt", ios::app);
 		for(int i = 0; i < decode[res].size(); ++i)
 			nt.note_it(f, decode[res][i]);
 		f.close();
@@ -50,12 +50,12 @@ void flush_it(){
 
 void bank_info(){
 	cout << "____________________________________________\n";
-	cout << "~ " << botsname + "'s bank log:" << '\n';
+	cout << "~ " << keysname + "'s bank log:" << '\n';
 	time_t t = time(nullptr);
 	cout << ctime(&t) << '\n';
-	int cnt[1024] = {}, sum = 0, len = 1;
+	int cnt[decode.size()] = {}, sum = 0, len = 1;
 	for(int i = 0; i < decode.size(); ++i){
-		ifstream f1("./bank/" + botsname + "/" + to_string(i) + ".txt");
+		ifstream f1("./bank/" + keysname + "/" + to_string(i) + ".txt");
 		int cnt1 = 0;
 		string s;
 		if(!f1.is_open())

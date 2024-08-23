@@ -3,27 +3,27 @@
 struct game{
 
 	int maxn, N, M, same, addr, addr1, bl, blsc, res, rang;
-	
-	long long tb, user_serial;
 
-	ifstream file;
-	node factors;
+	long long tb, serial_number;
+
+	ifstream cipher_text;
+	cipher_block factors;
 
 	vector<vector<int>> a, lst, ok;
 	vector<vector<bool>> exs, blast;
-	vector<int> code;
 	bool enough = false, decode;
 
 	int pts, mvs, mvs1, tries = 0, canon, ini;
-	
+
 	int dx[6] = {0, 0, 1, 1, -1, -1}, dy[6] = {2, -2, -1, 1, -1, 1};
 
-	vector<int> bot();
+	vector<int> key();
 	vector<int> cmp(int i);
 	void upd_res(int pos);
 	void fill_factors();
 	void set_factors();
-	string map_it();
+	void map_it();
+	string translate();
 
 	int rnd(){
 		int res = 0, k;
@@ -83,17 +83,10 @@ struct game{
 		else
 			fill_factors();
 		mvs = mvs1 = res = ini = pts = 0;
-		_srand(tb, user_serial);
-		a.clear(), exs.clear(), blast.clear(), lst.clear(), code.clear();
-		code.push_back(user_serial), code.push_back(tb);
-		code.push_back(N), code.push_back(maxn), code.push_back(M);
-		code.push_back(same), code.push_back(addr), code.push_back(addr1);
-		code.push_back(bl), code.push_back(blsc), code.push_back(rang);
-		for(int i = 0; i < maxn; ++i){
-			a.push_back({}), exs.push_back({}), blast.push_back({});
-			for(int j = 0; j < M; ++j)
-				a[i].push_back(0), exs[i].push_back(0), blast[i].push_back(0);
-		}
+		_srand(tb, serial_number);
+		a = vector<vector<int>>(maxn, vector<int>(M, 0));
+		blast = exs = vector<vector<bool>>(maxn, vector<bool>(M, false));
+		lst.clear();
 		for(int i = 0; i < N; ++i)
 			add_row();
 		canon = rnd();
@@ -114,9 +107,7 @@ struct game{
 	}
 
 	bool check_end(){
-		if(not_null(maxn - 1) || !not_null(0))
-			return true;
-		return false;
+		return not_null(maxn - 1) || !not_null(0);
 	}
 
 	bool adj_blast(vector<int> c, vector<int> p){
@@ -258,7 +249,7 @@ struct game{
 			if(check_end())
 				break;
 			updlst();
-			vector<int> x = bot();
+			vector<int> x = key();
 			if(x.empty()){
 				upd_res(2);
 				break;
@@ -267,7 +258,6 @@ struct game{
 			int s_it = search_it(x);
 			while(s_it--)
 				_rand();
-			code.push_back(x[0]), code.push_back(x[1]);
 			a[x[0]][x[1]] = canon, exs[x[0]][x[1]] = true;
 			if(!check_good(x)){
 				++mvs1;
@@ -299,23 +289,22 @@ struct game{
 	void play(string dir = "", int times = -1){
 		decode = !dir.empty();
 		if(decode){
-			file.open(dir + "encoded.txt");
-			ofstream f(dir + "decoded.txt");
-			f.close();
+			cipher_text.open(dir + "encoded.txt");
 			while(times--){
 				gameplay();
-				ofstream f1(dir + "decoded.txt", ios::app);
-				f1 << map_it();
-				f1.close();
+				map_it();
 			}
-			file.close();
+			ofstream plain_text(dir + "decoded.txt");
+			plain_text << translate();
+			plain_text.close();
+			cipher_text.close();
 		}
 		else{
 			if(times == -1)
 				while(!enough)
 					gameplay();
 			else
-				while(times-- > 0)
+				while(times--)
 					gameplay();
 			flush_it();
 		}
