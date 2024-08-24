@@ -300,9 +300,11 @@ struct game{
 			cipher_text.close();
 		}
 		else{
-			if(times == -1)
+			if(times == -1){
+                enough = false;
 				while(!enough)
 					gameplay();
+			}
 			else
 				while(times--)
 					gameplay();
