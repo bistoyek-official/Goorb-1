@@ -4,7 +4,19 @@
 *.out
 
 /Goorb code 1/accounts/games/*
+!/Goorb code 1/accounts/games/.gitkeep
 
 /Goorb encode 1/bank/*
+!/Goorb encode 1/bank/.gitkeep
+
 /Goorb encode 1/messages/*
+!/Goorb encode 1/messages/.gitkeep
+
 /Goorb encode 1/keys/*
+!/Goorb encode 1/keys/.gitkeep
+
+/Goorb post 1/Client/Contacts/Unkown/Bank/*
+!/Goorb post 1/Client/Contacts/Unkown/Bank/.gitkeep
+
+/Goorb post 1/Client/Contacts/Unkown/Encryption/bank/*
+!/Goorb post 1/Client/Contacts/Unkown/Encryption/bank/.gitkeep
