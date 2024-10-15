@@ -83,7 +83,7 @@ void write_zip_header(ofstream &f){
     return;
 }
 
-void creat_dir(string dir){
+void create_dir(string dir){
     #if defined(__unix__) || defined(__APPLE__)
     system(("mkdir " + dir).c_str());
     #else

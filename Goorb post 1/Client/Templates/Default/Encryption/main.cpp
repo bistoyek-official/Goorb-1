@@ -1,6 +1,33 @@
+/*
+MIT License
+
+Copyright (c) 2024 bistoyek(21)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
 #include "Encryption.hpp"
 
 int main(){
+    ifstream f("contact_name.txt");
+    getline(f, contact_name);
+    f.close();
     init();
     while(!client.open){
         cls();
@@ -8,6 +35,7 @@ int main(){
         cout << "Raz protocol\n";
         cout << "Created by: 21\n";
         cout << "_________________________________________\n";
+        cout << "Private Message to: " << contact_name << "\n_________________________________________\n";
         string server_ip, server_port_s;
         int server_port = 0;
         cout << "Enter the server IP: ";
@@ -30,13 +58,19 @@ int main(){
         cout << "Raz protocol\n";
         cout << "Created by: 21\n";
         cout << "_________________________________________\n";
-        cout << "Private Message to: " << contact_name << "\n_________________________________________\n";
+        cout << "Private Message to: " << contact_name;
+        if(!is_online)
+            cout << "(not connected yet)";
+        else if(is_online)
+            cout << "(online)";
+        else
+            cout << "(disconnected)";
+        cout << "\n_________________________________________\n";
         cout << "You can choose any of these options by entering their number:\n";
         cout << "  1. Encrypt the draft\n";
         cout << "  2. Send the draft\n";
         cout << "  3. Decode message\n";
-        cout << "  4. Make stronger the Bank_y\n";
-        cout << "  5. Exit\n";
+        cout << "  4. Update the Bank_y\n";
         if(kbhit()){
             char c = getch();
             if(c == '1')
@@ -47,6 +81,13 @@ int main(){
                 cout << "~ the directory of message: ";
                 string dir;
                 getline(cin, dir);
+                if(dir.empty())
+                    dir = ".";
+                if(dir.back() != '\\' && dir.back() != '/')
+                    dir += '/';
+                    #else
+                    dir += '\\';
+                    #endif
                 decode_to_read(dir);
             }
             if(c == '4'){
@@ -62,10 +103,11 @@ int main(){
                 cout << "ok now delete the update folder and then press space\n";
                 while(getch() != ' ');
             }
-            if(c == '5')
-                exit(0);
+            if('0' <= c && c <= '4'){
+                cout << "task " << c << " done!\npress a key to continue\n";
+                getch();
+            }
         }
-        usleep(1000000);
     }
     return 0;
 }

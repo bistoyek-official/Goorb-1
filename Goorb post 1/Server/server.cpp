@@ -37,43 +37,28 @@ SOFTWARE.
 #include "win_arpa_inet.hpp"
 #endif
 
-int constexpr PORT = 10000, BUFFER_SIZE = ((1 << 30) + 2) / 3;
+int constexpr PORT = 10000;
 
-char buffer[BUFFER_SIZE];
+int client[2], server_socket_, cnt;
 
-int client[2];
-
-std::string msg[2];
-
-bool my_recv(int _){
-    msg[_] = "";
-    char ch = '0';
-    char* c = &ch;
-    int64_t sz = 0;
-    while((*c) != ' '){
-        sz = 10 * sz + (*c) - '0';
-        int len = recv(client[_], c, 1, 0);
-        msg[_] += (*c);
-        if(len < 0)
-            return false;
+void broadcast(){
+    bool run[2] = {true, true};
+    char c[1];
+	for(int i = 0; run[0] && run[1]; i = 1 - i){
+        if(!run[i])
+            continue;
+        if(recv(client[i], c, 1, 0) < 0){
+            run[i] = false;
+            continue;
+        }
+        if((*c) == '~'){
+            run[i] = false;
+            --cnt;
+            send(client[1 - i], "0 ", 2, 0);
+            return;
+        }
+        send(client[1 - i], c, 1, 0);
     }
-    for(int i = 0; i < sz; ++i){
-        recv(client[_], c, 1, 0);
-        msg[_] += (*c);
-    }
-    return true;
-}
-
-void get_msg(){
-	for(int i = 0; i < 2; ++i)
-		my_recv(i);
-	return;
-}
-
-void give_msg(){
-	for(int i = 0; i < 2; ++i)
-		if(msg[i].size())
-			send(client[!i], msg[i].c_str(), msg[i].size(), 0);
 	return;
 }
 
@@ -102,6 +87,7 @@ int main(){
 		std::cerr << "Failed to create socket" << std::endl;
 		return 1;
 	}
+	server_socket_ = server_socket;
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(PORT);
@@ -122,8 +108,8 @@ int main(){
 			continue;
 		}
 		struct timeval timeout;
-        timeout.tv_sec = 1;
-        timeout.tv_usec = 0;
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 1000;
         #if defined(__unix__) || defined(__APPLE__)
         auto t = &timeout;
         #else
@@ -136,13 +122,47 @@ int main(){
 		std::cout << "Connection from " << inet_ntoa(client_addr.sin_addr) << std::endl;
 		client[i] = client_socket;
 	}
-	while(true){
-		get_msg();
-		give_msg();
-	}
-	close(server_socket);
-	#if !defined(__unix__) && !defined(__APPLE__)
-    WSACleanup();
+	cnt = 2;
+	for(int i = 0; i < 2; ++i)
+        send(client[i], "0 ", 2, 0);
+	while(cnt == 2)
+		broadcast();
+    #if defined(__unix__) || defined(__APPLE__)
+    int signal;
+    if(signal == SIGINT || signal == SIGTERM){
+    	close(client[0]);
+        close(client[1]);
+        close(server_socket_);
+    }
+    #else
+    DWORD signal;
+    if(signal == CTRL_CLOSE_EVENT){
+        close(client[0]);
+        close(client[1]);
+        close(server_socket_);
+        WSACleanup();
+    }
     #endif
 	return 0;
 }
+
+#if defined(__unix__) || defined(__APPLE__)
+void handleSignal(int signal){
+    if(signal == SIGINT || signal == SIGTERM){
+    	close(client[0]);
+        close(client[1]);
+        close(server_socket_);
+    }
+}
+
+#else
+BOOL WINAPI ConsoleHandler(DWORD signal){
+    if(signal == CTRL_CLOSE_EVENT){
+        close(client[0]);
+        close(client[1]);
+        close(server_socket_);
+        WSACleanup();
+    }
+    return TRUE;
+}
+#endif

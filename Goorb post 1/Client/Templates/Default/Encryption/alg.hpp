@@ -1,4 +1,31 @@
+/*
+MIT License
+
+Copyright (c) 2024 bistoyek(21)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
 #include "note.hpp"
+
+bool b_len;
+int len;
 
 class SHA256 {
 public:
@@ -16,19 +43,27 @@ public:
     void decrypt(string dir, int times, string typ = ".txt"){
         decode = true;
         cipher_text.open(dir + "encoded.txt");
-        while(times--)
+        ofstream plain_text(dir + "decoded" + typ);
+        plain_text.close();
+        while(times--){
             F();
-        ofstream plain_text;
-        if(typ != ".txt"){
-            plain_text.open(dir + "decoded" + typ, ios::binary);
+            if(!b_len)
+                continue;
+            ofstream plain_text;
+            plain_text.open(dir + "decoded" + typ, ios::binary | ios::app);
             string s = translate();
             for(auto &c: s)
                 plain_text << (char)(c - 128);
+            len = 0;
+            b_len = false;
+            plain_text.close();
         }
-        else{
-            plain_text.open(dir + "decoded" + typ);
-            plain_text << translate();
-        }
+        if(!len)
+            return;
+        plain_text.open(dir + "decoded" + typ, ios::binary | ios::app);
+        string s = translate();
+        for(auto &c: s)
+            plain_text << (char)(c - 128);
         plain_text.close();
         cipher_text.close();
         return;
