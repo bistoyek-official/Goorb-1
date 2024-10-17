@@ -26,6 +26,8 @@ SOFTWARE.
 
 int constexpr BY = 256, _K_ = 8;
 
+vector<int> notification;
+
 vector<string> bank_y[BY];
 
 string contact_name;
@@ -72,24 +74,25 @@ class Client{
         return;
     }
 
-    void send_it(){
+    bool send_it(){
         string dir = "../Draft/encoded.txt";
-        std::ifstream f(dir);
-        bool b = false;
-        char byte;
+        ifstream f(dir);
+        char c[1];
+        send(sock, "!", 1, 0);
+        if(recv(sock, c, 1, 0) <= 0)
+            return false;
         int64_t cnt = 0;
-        while(f.get(byte))
+        cout << "p1\n";
+        while(f.get(c[0]))
             ++cnt;
         f.close();
+        cout << "p2\n";
         string data = to_string(cnt);
         send(sock, data.c_str(), data.size(), 0);
         send(sock, " ", 1, 0);
         f.open(dir);
-        char c[1];
-        while(f.get(byte)){
-            c[0] = byte;
+        while(f.get(c[0]))
             send(sock, c, 1, 0);
-        }
         f.close();
         time_t t = time(nullptr);
         dir = "../Chats/You/" + to_string(t) + "/";
@@ -99,52 +102,68 @@ class Client{
         ofstream f1("../Draft/message.zip", ios::binary);
         write_zip_header(f1);
         f1.close();
-        return;
+        return true;
     }
 
-    bool my_recv(){
-        char ch = '0';
-        char* c = &ch;
+    bool recv_it(){
+        char c[1] = {'!'};
         int64_t sz = 0;
-        while((*c) != ' '){
-            sz = 10 * sz + (*c) - '0';
-            int len = recv(sock, c, 1, 0);
-            if(len < 0)
-                return false;
+        bool b = false, p = true;
+        while(true){
+            if(recv(sock, c, 1, 0) <= 0)
+                break;
+            if(c[0] == '!')
+                continue;
+            else
+                break;
+        }
+        while(c[0] != ' '){
+            if(p && c[0] != '!')
+                sz = 10 * sz + c[0] - '0';
+            p = true;
+            if(recv(sock, c, 1, 0) <= 0){
+                p = false;
+                if(!b)
+                    return false;
+            }
+            b = true;
         }
         if(!sz){
             ++is_online;
-            return false;
+            return true;
         }
         time_t t = time(nullptr);
         string dir = "../Chats/" + contact_name + "/" + to_string(t)+ "/encoded.txt";
         create_dir("../Chats/" + contact_name + "/" + to_string(t)+ "/");
         ofstream f(dir);
         cout << "receiving the message ..." << '\n';
+        cout << "*";
         for(int i = 0; i < sz; ++i){
-            if(i % 2048 == 0)
+            if(i % 204800 == 0){
                 cout << "*";
-            else if(i % 1024 == 0)
+                f.flush();
+            }
+            else if(i % 102400 == 0)
                 cout << "\b \b";
-            recv(sock, c, 1, 0);
-            f << (*c);
+            if(recv(sock, c, 1, 0) <= 0)
+                --i;
+            else
+                f << c[0];
         }
         f.close();
-        cout << "\nthe message received completely!" << '\n';
+        notification.push_back(t);
         return true;
-    }
-
-    bool recv_it(){
-        return my_recv();
     }
 
     void end_it(){
         send(sock, "~", 1, 0);
         close(sock);
+        open = false;
         #if !defined(__unix__) && !defined(__APPLE__)
         WSACleanup();
+        time_t t = time(nullptr);
+        while(time(nullptr) - t < 3);
         #endif
-        open = false;
         return;
     }
 
@@ -231,12 +250,5 @@ void decode_to_read(const string &dir){
 void handleSignal(int signal){
     if(signal == SIGINT || signal == SIGTERM)
     	client.end_it();
-}
-
-#else
-BOOL WINAPI ConsoleHandler(DWORD signal){
-    if(signal == CTRL_CLOSE_EVENT)
-        client.end_it();
-    return TRUE;
 }
 #endif

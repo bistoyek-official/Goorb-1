@@ -25,6 +25,10 @@ SOFTWARE.
 #include "Encryption.hpp"
 
 int main(){
+    #if defined(__unix__) || defined(__APPLE__)
+	signal(SIGINT, handleSignal);
+	signal(SIGTERM, handleSignal);
+	#endif
     ifstream f("contact_name.txt");
     getline(f, contact_name);
     f.close();
@@ -51,32 +55,61 @@ int main(){
             while(getch() != ' ');
         }
     }
+    int cnt_send = 0;
+    char c;
+    bool two = false;
     while(true){
-        while(client.my_recv());
+        while(client.recv_it());
         cls();
         cout << "Goorb post\n";
         cout << "Raz protocol\n";
         cout << "Created by: 21\n";
         cout << "_________________________________________\n";
-        cout << "Private Message to: " << contact_name;
+        cout << "Private Message to: " << contact_name << " ";
         if(!is_online)
             cout << "(not connected yet)";
-        else if(is_online)
+        else if(is_online == 1)
             cout << "(online)";
         else
             cout << "(disconnected)";
+        if(notification.size())
+            cout << "\n*" << notification.size() << " nofitication";
+        if(notification.size() > 1)
+            cout << "s";
         cout << "\n_________________________________________\n";
         cout << "You can choose any of these options by entering their number:\n";
         cout << "  1. Encrypt the draft\n";
         cout << "  2. Send the draft\n";
         cout << "  3. Decode message\n";
         cout << "  4. Update the Bank_y\n";
-        if(kbhit()){
-            char c = getch();
+        cout << "  5. Show notifications\n";
+        cout << "  6. Disconnect\n";
+        if(two || kbhit()){
+            if(!two)
+                c = getch();
             if(c == '1')
                 encode_to_send();
-            if(c == '2')
-                client.send_it();
+            if(c == '2'){
+                if(!two){
+                    ifstream f("../Draft/encoded.txt");
+                    if(!f.is_open()){
+                        cout << "failed! seems there isn't any encoded.txt file\npress any key to continue";
+                        getch();
+                        continue;
+                    }
+                }
+                cout << "sending ...\n";
+                two = false;
+                if(!client.send_it()){
+                    two = true;
+                    ++cnt_send;
+                    if(cnt_send == 5){
+                        cnt_send = 0;
+                        two = false;
+                    }
+                    continue;
+                }
+            }
             if(c == '3'){
                 cout << "~ the directory of message: ";
                 string dir;
@@ -85,9 +118,6 @@ int main(){
                     dir = ".";
                 if(dir.back() != '\\' && dir.back() != '/')
                     dir += '/';
-                    #else
-                    dir += '\\';
-                    #endif
                 decode_to_read(dir);
             }
             if(c == '4'){
@@ -98,7 +128,8 @@ int main(){
                     ofstream f2("../Bank/" + to_string(i) + ".txt", ios::app);
                     string ln;
                     while(getline(f1, ln))
-                        f2 << ln << '\n';
+                        if(ln.size())
+                            f2 << ln << '\n';
                 }
                 cout << "ok now delete the update folder and then press space\n";
                 while(getch() != ' ');
@@ -106,6 +137,19 @@ int main(){
             if('0' <= c && c <= '4'){
                 cout << "task " << c << " done!\npress a key to continue\n";
                 getch();
+            }
+            if(c == '5'){
+                cout << "\n____________\nNotifications:\n";
+                for(int e: notification)
+                    cout << "* " << e << '\n';
+                notification.clear();
+                cout << "\n____________\npress space key to continue\n";
+                while(getch() != ' ');
+            }
+            if(c == '6'){
+                client.end_it();
+                ++is_online;
+                continue;
             }
         }
     }

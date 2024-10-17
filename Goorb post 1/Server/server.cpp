@@ -30,39 +30,72 @@ SOFTWARE.
 #include <time.h>
 
 #if defined(__unix__) || defined(__APPLE__)
+#include <sys/select.h>
+#include <termios.h>
+#include <fcntl.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <signal.h>
+
+bool kbhit(){
+	struct termios oldt, newt;
+	int ch, oldf;
+	tcgetattr(STDIN_FILENO, &oldt);
+	newt = oldt;
+	newt.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+	fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+	ch = getchar();
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+	fcntl(STDIN_FILENO, F_SETFL, oldf);
+	if(ch != EOF){
+		ungetc(ch, stdin);
+		return true;
+	}
+	return false;
+}
+
+int getch(){
+	struct termios oldt, newt;
+	int ch;
+	tcgetattr(STDIN_FILENO, &oldt);
+	newt = oldt;
+	newt.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	ch = getchar();
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+	return ch;
+}
 
 #else
 #include "win_arpa_inet.hpp"
+
+#include <conio.h>
 #endif
 
 int constexpr PORT = 10000;
 
 int client[2], server_socket_, cnt;
 
-void broadcast(){
-    bool run[2] = {true, true};
-    char c[1];
-	for(int i = 0; run[0] && run[1]; i = 1 - i){
-        if(!run[i])
-            continue;
-        if(recv(client[i], c, 1, 0) < 0){
-            run[i] = false;
-            continue;
-        }
-        if((*c) == '~'){
-            run[i] = false;
-            --cnt;
-            send(client[1 - i], "0 ", 2, 0);
-            return;
-        }
-        send(client[1 - i], c, 1, 0);
+#if defined(__unix__) || defined(__APPLE__)
+void handleSignal(int signal){
+    if(signal == SIGINT || signal == SIGTERM){
+        for(int i = 0; i < 2; ++i)
+            send(client[i], "0 0 ", 4, 0);
+    	close(client[0]);
+        close(client[1]);
+        close(server_socket_);
     }
-	return;
 }
 
+#endif
+
 int main(){
+    #if defined(__unix__) || defined(__APPLE__)
+	signal(SIGINT, handleSignal);
+	signal(SIGTERM, handleSignal);
+	#endif
 	std::cout << "Goorb post\n";
 	std::cout << "Raz protocol\n";
 	std::cout << "Created by: 21\n";
@@ -108,8 +141,8 @@ int main(){
 			continue;
 		}
 		struct timeval timeout;
-        timeout.tv_sec = 0;
-        timeout.tv_usec = 1000;
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
         #if defined(__unix__) || defined(__APPLE__)
         auto t = &timeout;
         #else
@@ -117,52 +150,40 @@ int main(){
         #endif
         if(setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO, t, sizeof(timeout)) < 0){
             std::cout << "Error setting socket options" << '\n';
-            exit(1);
+            return 1;
         }
 		std::cout << "Connection from " << inet_ntoa(client_addr.sin_addr) << std::endl;
 		client[i] = client_socket;
 	}
-	cnt = 2;
 	for(int i = 0; i < 2; ++i)
         send(client[i], "0 ", 2, 0);
-	while(cnt == 2)
-		broadcast();
-    #if defined(__unix__) || defined(__APPLE__)
-    int signal;
-    if(signal == SIGINT || signal == SIGTERM){
-    	close(client[0]);
-        close(client[1]);
-        close(server_socket_);
+    char c[1];
+    bool b = true;
+    std::cout << "You can stop the server by pressing '~' key\n";
+	for(int i = 0; b; i = 1 - i){
+        while(b){
+            if(kbhit() && getch() == '~')
+                b = false;
+            if(recv(client[i], c, 1, 0) <= 0 || c[0] == '~')
+                break;
+            if(c[0] == '!'){
+                send(client[i], c, 1, 0);
+                continue;
+            }
+            send(client[1 - i], c, 1, 0);
+        }
+        if(c[0] == '~')
+            break;
     }
-    #else
-    DWORD signal;
-    if(signal == CTRL_CLOSE_EVENT){
-        close(client[0]);
-        close(client[1]);
-        close(server_socket_);
-        WSACleanup();
-    }
+    for(int i = 0; i < 2; ++i)
+        send(client[i], "0 0 ", 4, 0);
+    close(client[0]);
+    close(client[1]);
+    close(server_socket_);
+    #if !defined(__unix__) && !defined(__APPLE__)
+    WSACleanup();
     #endif
+    time_t t = time(nullptr);
+    while(time(nullptr) - t < 3);
 	return 0;
 }
-
-#if defined(__unix__) || defined(__APPLE__)
-void handleSignal(int signal){
-    if(signal == SIGINT || signal == SIGTERM){
-    	close(client[0]);
-        close(client[1]);
-        close(server_socket_);
-    }
-}
-
-#else
-BOOL WINAPI ConsoleHandler(DWORD signal){
-    if(signal == CTRL_CLOSE_EVENT){
-        close(client[0]);
-        close(client[1]);
-        close(server_socket_);
-        WSACleanup();
-    }
-    return TRUE;
-}
-#endif
