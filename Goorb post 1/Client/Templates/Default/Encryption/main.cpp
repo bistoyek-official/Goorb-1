@@ -148,7 +148,7 @@ int main(){
             }
             if(c == '6'){
                 client.end_it();
-                ++is_online;
+                is_online += 100;
                 continue;
             }
         }
