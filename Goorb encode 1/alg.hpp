@@ -216,7 +216,7 @@ struct game{
 	}
 
 	void upd_rnd(){
-		int num = 0, bs = 71, mod = 1000000021;
+		int num = addr, bs = addr1 + 71, mod = 1000000021;
 		for(int i = 0; i < maxn; ++i)
 			for(int j = 0; j < M; ++j)
 				num = ((num * bs) % mod + a[i][j]) % mod;
@@ -241,7 +241,7 @@ struct game{
 		return l + 1;
 	}
 
-	void gameplay(){
+	void F(){
 		gen();
 		upd_res(0);
 		while(true){
@@ -279,6 +279,8 @@ struct game{
 			canon = rnd();
 			upd_res(5);
 		}
+		if(mvs + mvs1 < 200)
+            return;
 		quality += mvs + mvs1;
 		if(!decode)
 			enough = add_it(factors, res);
@@ -290,10 +292,8 @@ struct game{
 		decode = !dir.empty();
 		if(decode){
 			cipher_text.open(dir + "encoded.txt");
-			while(times--){
-				gameplay();
-				map_it();
-			}
+			while(times--)
+				F(), map_it();
 			ofstream plain_text(dir + "decoded.txt");
 			plain_text << translate();
 			plain_text.close();
@@ -303,11 +303,11 @@ struct game{
 			if(times == -1){
                 enough = false;
 				while(!enough)
-					gameplay();
+					F();
 			}
 			else
 				while(times--)
-					gameplay();
+					F();
 			flush_it();
 		}
 		return;

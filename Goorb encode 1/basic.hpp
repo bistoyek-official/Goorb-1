@@ -11,7 +11,9 @@ using namespace std;
 string keysname;
 
 void cls(){
-    #if defined(__unix__) || defined(__APPLE__)
+	#ifdef __unix__
+		system("clear");
+	#elifdef __mach__
 		system("clear");
 	#else
 		system("cls");
